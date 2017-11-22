@@ -1,0 +1,46 @@
+main{
+    padding: 0;
+    margin: 0;
+}
+
+#container {
+    margin: 10px auto 20px auto;
+    padding: 20px;
+}
+
+#header-image {
+    width: 100%;
+    height: 20em;
+    background-image:    url(../header.jpg);
+    background-size:     cover;                    
+    background-repeat:   no-repeat;
+    background-position: center center;    
+}
+
+.login-icon{
+    float:right;
+    margin-right: 20px;
+    margin-top: 5px;
+}
+
+main {
+    max-width: 1024px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h2 {
+    font-size: 1.6rem;
+}
+
+h3 {
+    font-size: 1.3rem;
+}
+
+#calculate-price-form button {
+    margin-top: 20px;
+}
+
+#administrator-login-form {
+    margin-top: 40px;
+}

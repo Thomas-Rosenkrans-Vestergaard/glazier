@@ -1,0 +1,25 @@
+<%@ page pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="css/materialize.min.css"/>
+        <link rel="stylesheet" href="css/main.css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="js/materialize.min.js"></script>
+        <title>${title}</title>
+    </head>
+    <body>
+        <header>
+            <div id="header-image">
+            </div>
+            <nav>
+                <ul id="nav-mobile" class="left hide-on-med-and-down">
+                    <li><a href="index">Front page</a></li>
+                    <li><a href="calculate-price">Calculate price</a></li>
+                    <li><a href="order-product">Order products</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
