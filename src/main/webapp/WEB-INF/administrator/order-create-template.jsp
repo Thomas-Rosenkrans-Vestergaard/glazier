@@ -1,10 +1,25 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ include file="jspf/top.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="jspf/top.jspf" %>
 <%@ include file="jspf/orders-menu-template.jspf" %>
 <div id="container">
     <form class="main" method="POST">
+
+        <fieldset class="row">
+            <p>Chose the messurement to use when specifying the dimensions of the product.</p>
+            <p>
+                <input name="messurement" type="radio" id="messurement-mm" value="mm">
+                <label for="messurement-mm">Millimeters</label>
+            </p>
+            <p>
+                <input checked="checked" name="messurement" type="radio" id="messurement-cm" value="cm">
+                <label for="messurement-cm">Centimeters</label>
+            </p>
+            <p>
+                <input class="with-gap" name="messurement" type="radio" id="messurement-m" value="m">
+                <label for="messurement-m">Meters</label>
+            </p>
+        </fieldset>
 
         <fieldset class="row">
             <p>Product dimensions.</p>

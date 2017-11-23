@@ -160,31 +160,14 @@ public class OrdersServlet extends HttpServlet {
 
             boolean errors = false;
 
-            try {
-                int frameId = Integer.parseInt(request.getParameter("frame"));
-                if (!orderBuilder.setFrame(FrameReference.of(frameId))) {
-                    messageHelper.addMessage("Incorrect frame.");
-                    errors = true;
-                }
-            } catch (NumberFormatException e) {
-                messageHelper.addMessage("Malformed frame id.");
+            String messurement = request.getParameter("messurement");
+            if (messurement == null || (!messurement.equals("m") && !messurement.equals("cm") && !messurement.equals("mm"))) {
+                messageHelper.addMessage("Malformed messurement.");
                 errors = true;
             }
 
             try {
-                int glassId = Integer.parseInt(request.getParameter("glass"));
-                if (!orderBuilder.setGlass(GlassReference.of(glassId))) {
-                    messageHelper.addMessage("Incorrect glass.");
-                    errors = true;
-                }
-            } catch (NumberFormatException e) {
-                messageHelper.addMessage("Malformed glass id.");
-                errors = true;
-            }
-
-            try {
-                int width = Integer.parseInt(request.getParameter("width"));
-                if (!orderBuilder.setWidthMillimeters(width)) {
+                if (!orderBuilder.setWidthMillimeters(Integer.parseInt(request.getParameter("width")))) {
                     messageHelper.addMessage("Invalid width.");
                     errors = true;
                 }
@@ -194,13 +177,32 @@ public class OrdersServlet extends HttpServlet {
             }
 
             try {
-                int height = Integer.parseInt(request.getParameter("height"));
-                if (!orderBuilder.setHeightMillimeters(height)) {
+                if (!orderBuilder.setHeightMillimeters(Integer.parseInt(request.getParameter("height")))) {
                     messageHelper.addMessage("Invalid height.");
                     errors = true;
                 }
             } catch (NumberFormatException e) {
                 messageHelper.addMessage("Malformed height");
+                errors = true;
+            }
+
+            try {
+                if (!orderBuilder.setFrame(FrameReference.of(Integer.parseInt(request.getParameter("frame"))))) {
+                    messageHelper.addMessage("Incorrect frame.");
+                    errors = true;
+                }
+            } catch (NumberFormatException e) {
+                messageHelper.addMessage("Malformed frame id.");
+                errors = true;
+            }
+
+            try {
+                if (!orderBuilder.setGlass(GlassReference.of(Integer.parseInt(request.getParameter("glass"))))) {
+                    messageHelper.addMessage("Incorrect glass.");
+                    errors = true;
+                }
+            } catch (NumberFormatException e) {
+                messageHelper.addMessage("Malformed glass id.");
                 errors = true;
             }
 
@@ -237,6 +239,19 @@ public class OrdersServlet extends HttpServlet {
             if (errors) {
                 response.sendRedirect("orders?action=create");
                 return;
+            }
+            
+            int width = orderBuilder.getWidthMillimeters();
+            int height = orderBuilder.getHeightMillimeters();
+
+            if (messurement.equals("m")) {
+                orderBuilder.setWidthMillimeters(width * 1000);
+                orderBuilder.setHeightMillimeters(height * 1000);
+            }
+
+            if (messurement.equals("cm")) {
+                orderBuilder.setWidthMillimeters(width * 10);
+                orderBuilder.setHeightMillimeters(height * 10);
             }
 
             Order order = orderDAO.insertOrder(orderBuilder);

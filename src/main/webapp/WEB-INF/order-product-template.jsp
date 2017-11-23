@@ -62,7 +62,7 @@
                 <label for="customer_address">Your address</label>
             </div>
             <div class="input-field col s12">
-                <input id="customer_zip" type="number" class="validate" name="customer_zip" required="required">
+                <input id="customer_zip" type="text" class="validate" name="customer_zip" required="required">
                 <label for="customer_zip">Your zipcode</label>
             </div>
             <div class="input-field col s12">

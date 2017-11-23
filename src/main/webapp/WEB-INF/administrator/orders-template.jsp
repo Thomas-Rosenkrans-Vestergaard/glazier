@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="jspf/top.jspf" %>
-<%@ include file="jspf/glasses-menu-template.jspf" %>
+<%@ include file="jspf/orders-menu-template.jspf" %>
 <table class="striped">
     <thead>
         <tr>
@@ -22,8 +22,8 @@
         <c:forEach items="${orders}" var="order">
             <tr>
                 <td><a href="orders?id=${order.getID()}">${order.getID()}</a></td>
-                <td>${order.getWidthMM()}</td>
-                <td>${order.getHeightMM()}</td>
+                <td>${order.getWidthMillimeters()}</td>
+                <td>${order.getHeightMillimeters()}</td>
                 <td><a href="frames?id=${order.getFrame().getID()}">${order.getFrame().getName()}</td>
                 <td><a href="glasses?id=${order.getGlass().getID()}">${order.getGlass().getName()}</td>
                 <td>${order.getCustomerName()}</td>

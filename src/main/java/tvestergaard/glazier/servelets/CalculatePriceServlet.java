@@ -52,7 +52,7 @@ public class CalculatePriceServlet extends HttpServlet {
             return;
         }
 
-        request.setAttribute("title", "Glazier");
+        request.setAttribute("title", "Calculate product price");
         MysqlDataSource source = new DefaultMysqlSource();
         GlassDAO glassDAO = new MysqlGlassDAO(source);
         FrameDAO frameDAO = new MysqlFrameDAO(source);
@@ -160,6 +160,7 @@ public class CalculatePriceServlet extends HttpServlet {
         request.setAttribute("height", height.doubleValue());
         request.setAttribute("glass", glassID);
         request.setAttribute("frame", frameID);
+        request.setAttribute("title", "Calculate product price result.");
         request.getRequestDispatcher("WEB-INF/calculate-price-result-template.jsp").forward(request, response);
     }
 

@@ -1,8 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ include file="jspf/top.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="jspf/top.jspf" %>
-<%@ include file="jspf/glasses-menu-template.jspf" %>
+<%@ include file="jspf/orders-menu-template.jspf" %>
 <form class="main" method="POST">
 
     <div class="input-field col s12">
@@ -13,12 +12,12 @@
     <fieldset class="row">
         <p>Product dimensions.</p>
         <div class="input-field col s12">
-            <input id="width" type="number" class="validate" name="width" required="required" value="${order.getWidthMM()}">
-            <label for="width">Width</label>
+            <input id="width" type="number" class="validate" name="width" required="required" value="${order.getWidthMillimeters()}">
+            <label for="width">Width (millimeters)</label>
         </div>
         <div class="input-field col s12">
-            <input id="height" type="number" class="validate" name="height" required="required" value="${order.getHeightMM()}">
-            <label for="height">Height</label>
+            <input id="height" type="number" class="validate" name="height" required="required" value="${order.getHeightMillimeters()}">
+            <label for="height">Height (millimeters)</label>
         </div>
     </fieldset>
 

@@ -7,13 +7,13 @@ public final class Glass extends GlassReference {
 
     private String name;
     private String description;
-    private BigDecimal pricePerSquareMeter;
+    private BigDecimal pricePerSquareMeters;
 
-    public Glass(int id, String name, String description, BigDecimal pricePerSquareMeter) {
+    public Glass(int id, String name, String description, BigDecimal pricePerSquareMeters) {
         super(id);
         this.name = name;
         this.description = description;
-        this.pricePerSquareMeter = pricePerSquareMeter;
+        this.pricePerSquareMeters = pricePerSquareMeters;
     }
 
     public String getName() {
@@ -44,7 +44,7 @@ public final class Glass extends GlassReference {
     }
 
     public BigDecimal getPricePerSquareMeter() {
-        return pricePerSquareMeter;
+        return pricePerSquareMeters;
     }
 
     public boolean setPricePerSquareMeter(BigDecimal price) {
@@ -53,7 +53,7 @@ public final class Glass extends GlassReference {
             return false;
         }
 
-        this.pricePerSquareMeter = price;
+        this.pricePerSquareMeters = price;
         return true;
     }
 

@@ -7,13 +7,13 @@ public final class Frame extends FrameReference {
 
     private String name;
     private String description;
-    private BigDecimal pricePerMeter;
+    private BigDecimal pricePerMeters;
 
     public Frame(final int id, String name, String description, BigDecimal pricePerMillimeter) {
         super(id);
         this.name = name;
         this.description = description;
-        this.pricePerMeter = pricePerMillimeter;
+        this.pricePerMeters = pricePerMillimeter;
     }
 
     public final String getName() {
@@ -46,7 +46,7 @@ public final class Frame extends FrameReference {
     }
 
     public final BigDecimal getPricePerMeter() {
-        return pricePerMeter;
+        return pricePerMeters;
     }
 
     public final boolean setPricePerMeter(BigDecimal price) {
@@ -55,7 +55,7 @@ public final class Frame extends FrameReference {
             return false;
         }
 
-        this.pricePerMeter = price;
+        this.pricePerMeters = price;
         return true;
     }
 
