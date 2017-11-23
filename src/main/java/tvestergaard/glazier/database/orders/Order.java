@@ -5,8 +5,8 @@ import tvestergaard.glazier.database.glass.Glass;
 
 public final class Order extends OrderReference {
 
-    private int widthMM;
-    private int heightMM;
+    private int widthMillimeters;
+    private int heightMillimeters;
     private Frame frame;
     private Glass glass;
     private String customerName;
@@ -16,10 +16,10 @@ public final class Order extends OrderReference {
     private String customerEmail;
     private String customerPhone;
 
-    public Order(int id, int widthMM, int heightMM, Frame frame, Glass glass, String customerName, String customerAddress, String customerZip, String customerCity, String customerEmail, String customerPhone) {
+    public Order(int id, int widthMillimeters, int heightMillimeters, Frame frame, Glass glass, String customerName, String customerAddress, String customerZip, String customerCity, String customerEmail, String customerPhone) {
         super(id);
-        this.widthMM = widthMM;
-        this.heightMM = heightMM;
+        this.widthMillimeters = widthMillimeters;
+        this.heightMillimeters = heightMillimeters;
         this.frame = frame;
         this.glass = glass;
         this.customerName = customerName;
@@ -30,28 +30,28 @@ public final class Order extends OrderReference {
         this.customerPhone = customerPhone;
     }
 
-    public int getWidthMM() {
-        return widthMM;
+    public int getWidthMillimeters() {
+        return widthMillimeters;
     }
 
-    public boolean setWidthMM(int widthMM) {
-        if (widthMM < 0) {
+    public boolean setWidthMillimeters(int widthMillimeters) {
+        if (widthMillimeters < 0) {
             return false;
         }
 
-        this.widthMM = widthMM;
+        this.widthMillimeters = widthMillimeters;
         return true;
     }
 
-    public int getHeightMM() {
-        return heightMM;
+    public int getHeightMillimeters() {
+        return heightMillimeters;
     }
 
-    public boolean setHeightMM(int heightMM) {
-        if (heightMM < 0) {
+    public boolean setHeightMillimeters(int heightMillimeters) {
+        if (heightMillimeters < 0) {
             return false;
         }
-        this.heightMM = heightMM;
+        this.heightMillimeters = heightMillimeters;
         return true;
     }
 

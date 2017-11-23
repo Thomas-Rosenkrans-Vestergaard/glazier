@@ -8,6 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
+        <%@ include file="messages.jspf" %>
         <title>${title}</title>
     </head>
     <body>
@@ -15,7 +16,7 @@
             <div id="header-image">
             </div>
             <nav>
-                <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <ul id="nav-mobile">
                     <li><a href="index">Front page</a></li>
                     <li><a href="calculate-price">Calculate price</a></li>
                     <li><a href="order-product">Order products</a></li>

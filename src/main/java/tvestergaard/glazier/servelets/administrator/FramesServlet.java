@@ -8,6 +8,7 @@ package tvestergaard.glazier.servelets.administrator;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,10 +18,19 @@ import tvestergaard.glazier.AdministratorHelper;
 import tvestergaard.glazier.MessageHelper;
 import tvestergaard.glazier.database.DefaultMysqlSource;
 import tvestergaard.glazier.database.frames.Frame;
+import tvestergaard.glazier.database.frames.FrameBuilder;
 import tvestergaard.glazier.database.frames.FrameDAO;
 import tvestergaard.glazier.database.frames.FrameReference;
 import tvestergaard.glazier.database.frames.MysqlFrameDAO;
 import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
+import tvestergaard.glazier.database.glass.GlassDAO;
+import tvestergaard.glazier.database.glass.GlassReference;
+import tvestergaard.glazier.database.glass.MysqlGlassDAO;
+import tvestergaard.glazier.database.glass.UnknownGlassReferenceException;
+import tvestergaard.glazier.database.orders.MysqlOrderDAO;
+import tvestergaard.glazier.database.orders.Order;
+import tvestergaard.glazier.database.orders.OrderBuilder;
+import tvestergaard.glazier.database.orders.OrderDAO;
 
 /**
  *
@@ -49,6 +59,12 @@ public class FramesServlet extends HttpServlet {
 
         MessageHelper messageHelper = new MessageHelper(request);
 
+        String action = request.getParameter("action");
+        if (action != null && action.equals("create")) {
+            handleCreateGet(request, response);
+            return;
+        }
+
         String queryId = request.getParameter("id");
 
         if (queryId == null) {
@@ -75,6 +91,12 @@ public class FramesServlet extends HttpServlet {
             messageHelper.addMessage("Unknown frame id.");
             response.sendRedirect("frames");
         }
+    }
+
+    private void handleCreateGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("title", "Create frame");
+        request.getRequestDispatcher("/WEB-INF/administrator/frame-create-template.jsp").forward(request, response);
     }
 
     /**
@@ -106,6 +128,11 @@ public class FramesServlet extends HttpServlet {
 
         if (action.equals("update")) {
             handleUpdate(request, response, messageHelper);
+            return;
+        }
+
+        if (action.equals("create")) {
+            handleCreatePost(request, response, messageHelper);
             return;
         }
 
@@ -167,9 +194,15 @@ public class FramesServlet extends HttpServlet {
                 messageHelper.addMessage("Malformed description.");
                 errors = true;
             }
-            
-            if(!frame.setPricePerMeter(request.getParameter("price_per_m"))){
-                messageHelper.addMessage("Malformed price per meter.");
+
+            try {
+                BigDecimal decimal = new BigDecimal(request.getParameter("price_per_meter"));
+                if (!frame.setPricePerMeter(decimal)) {
+                    messageHelper.addMessage("Invalid price.");
+                    errors = true;
+                }
+            } catch (NumberFormatException | NullPointerException e) {
+                messageHelper.addMessage("Malformed price.");
                 errors = true;
             }
 
@@ -186,6 +219,53 @@ public class FramesServlet extends HttpServlet {
             response.sendRedirect("frames");
         } catch (UnknownFrameReferenceException e) {
             messageHelper.addMessage("Unknown id when attempting to delete frame. No frame was deleted.");
+            response.sendRedirect("frames");
+        }
+    }
+
+    private void handleCreatePost(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
+            throws ServletException, IOException {
+
+        try {
+
+            FrameBuilder frameBuilder = new FrameBuilder();
+
+            MysqlDataSource source = DefaultMysqlSource.getSource();
+            FrameDAO frameDAO = new MysqlFrameDAO(source);
+
+            boolean errors = false;
+
+            if (!frameBuilder.setName(request.getParameter("name"))) {
+                messageHelper.addMessage("Malformed name.");
+                errors = true;
+            }
+
+            if (!frameBuilder.setDescription(request.getParameter("description"))) {
+                messageHelper.addMessage("Malformed description.");
+                errors = true;
+            }
+
+            try {
+                BigDecimal decimal = new BigDecimal(request.getParameter("price_per_meter"));
+                if (!frameBuilder.setPricePerMeter(decimal)) {
+                    messageHelper.addMessage("Invalid price.");
+                    errors = true;
+                }
+            } catch (NumberFormatException | NullPointerException e) {
+                messageHelper.addMessage("Malformed price.");
+                errors = true;
+            }
+            
+            if(errors){
+                response.sendRedirect("orders?action=create");
+                return;
+            }
+
+            Frame frame = frameDAO.insertFrame(frameBuilder);
+            messageHelper.addMessage("The frame was successfully created.");
+            response.sendRedirect("frames?id=" + frame.getID());
+        } catch (IllegalStateException e) {
+            messageHelper.addMessage("Error while attempting to insert frame. No frame was created.");
             response.sendRedirect("frames");
         }
     }

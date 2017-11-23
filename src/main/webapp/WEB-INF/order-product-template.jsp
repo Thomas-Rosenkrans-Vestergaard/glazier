@@ -14,26 +14,26 @@
         <fieldset class="row">
             <p>Chose the messurement to use when specifying the dimensions of the product.</p>
             <p>
-                <input name="messurement" type="radio" id="messurement-mm" value="mm"/>
+                <input name="messurement" type="radio" id="messurement-mm" value="mm" ${fillMessurement == 'mm' ? 'checked' : ''}>
                 <label for="messurement-mm">Millimeters</label>
             </p>
             <p>
-                <input checked="checked" name="messurement" type="radio" id="messurement-cm" value="cm" />
+                <input checked="checked" name="messurement" type="radio" id="messurement-cm" value="cm" ${fillMessurement == 'cm' ? 'checked' : ''}>
                 <label for="messurement-cm">Centimeters</label>
             </p>
             <p>
-                <input class="with-gap" name="messurement" type="radio" id="messurement-m" value="m" />
+                <input class="with-gap" name="messurement" type="radio" id="messurement-m" value="m" ${fillMessurement == 'm' ? 'checked' : ''}>
                 <label for="messurement-m">Meters</label>
             </p>
         </fieldset>
         <fieldset class="row">
             <p>Enter the dimensions of the product.</p>
             <div class="input-field col s12">
-                <input id="width" type="number" class="validate" name="width" required="required">
+                <input id="width" type="number" class="validate" name="width" required="required" value="${fillWidth}">
                 <label for="width">Width</label>
             </div>
             <div class="input-field col s12">
-                <input id="height" type="number" class="validate" name="height" required="required">
+                <input id="height" type="number" class="validate" name="height" required="required" value="${fillHeight}">
                 <label for="height">Height</label>
             </div>
         </fieldset>
@@ -41,14 +41,14 @@
         <select id="glass-type-select" name="glass" required="required">
             <option value="" disabled selected>Chose the type of glass to use on the product.</option>
             <c:forEach items="${glasses}" var="glass">
-                <option value="${glass.getId()}">${glass.getName()}</option>
+                <option value="${glass.getID()}" ${fillGlass == glass.getID() ? 'selected' : ''}>${glass.getName()}</option>
             </c:forEach>
         </select>
 
         <select id="frame-select" name="frame" required="required">
             <option value="" disabled selected>Chose the frame to use on the product</option>
             <c:forEach items="${frames}" var="frame">
-                <option value="${frame.getId()}">${frame.getName()}</option>
+                <option value="${frame.getID()}" ${fillFrame == frame.getID() ? 'selected' : ''}>${frame.getName()}</option>
             </c:forEach>
         </select>
 

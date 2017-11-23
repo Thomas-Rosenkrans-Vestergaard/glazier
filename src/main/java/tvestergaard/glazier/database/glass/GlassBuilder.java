@@ -1,20 +1,21 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package tvestergaard.glazier.database.glass;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
-public final class Glass extends GlassReference {
+/**
+ *
+ * @author Thomas
+ */
+public class GlassBuilder {
 
     private String name;
     private String description;
     private BigDecimal pricePerSquareMeter;
-
-    public Glass(int id, String name, String description, BigDecimal pricePerSquareMeter) {
-        super(id);
-        this.name = name;
-        this.description = description;
-        this.pricePerSquareMeter = pricePerSquareMeter;
-    }
 
     public String getName() {
         return name;
@@ -54,24 +55,6 @@ public final class Glass extends GlassReference {
         }
 
         this.pricePerSquareMeter = price;
-        return true;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Glass other = (Glass) obj;
-        if (!Objects.equals(this.getID(), other.getID())) {
-            return false;
-        }
         return true;
     }
 }

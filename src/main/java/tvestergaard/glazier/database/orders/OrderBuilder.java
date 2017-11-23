@@ -5,7 +5,6 @@
  */
 package tvestergaard.glazier.database.orders;
 
-import tvestergaard.glazier.database.frames.Frame;
 import tvestergaard.glazier.database.frames.FrameReference;
 import tvestergaard.glazier.database.glass.GlassReference;
 
@@ -15,8 +14,8 @@ import tvestergaard.glazier.database.glass.GlassReference;
  */
 public class OrderBuilder {
 
-    private int widthMM = 0;
-    private int heightMM = 0;
+    private int widthMillimeters = 0;
+    private int heightMillimeters = 0;
     private FrameReference frame;
     private GlassReference glass;
     private String customerName;
@@ -26,28 +25,28 @@ public class OrderBuilder {
     private String customerEmail;
     private String customerPhone;
 
-    public int getWidthMM() {
-        return widthMM;
+    public int getWidthMillimeters() {
+        return widthMillimeters;
     }
 
-    public boolean setWidthMM(int widthMM) {
-        if (widthMM < 0) {
+    public boolean setWidthMillimeters(int widthMillimeters) {
+        if (widthMillimeters < 0) {
             return false;
         }
 
-        this.widthMM = widthMM;
+        this.widthMillimeters = widthMillimeters;
         return true;
     }
 
-    public int getHeightMM() {
-        return heightMM;
+    public int getHeightMillimeters() {
+        return heightMillimeters;
     }
 
-    public boolean setHeightMM(int heightMM) {
-        if (heightMM < 0) {
+    public boolean setHeightMillimeters(int heightMillimeters) {
+        if (heightMillimeters < 0) {
             return false;
         }
-        this.heightMM = heightMM;
+        this.heightMillimeters = heightMillimeters;
         return true;
     }
 

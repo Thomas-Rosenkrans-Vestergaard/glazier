@@ -8,6 +8,7 @@ package tvestergaard.glazier.servelets;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -73,26 +74,26 @@ public class CalculatePriceServlet extends HttpServlet {
             errors = true;
         }
 
-        int width = 0;
+        BigDecimal width = null;
         try {
-            width = Integer.parseInt(request.getParameter("width"));
-            if (width <= 0) {
+            width = new BigDecimal(request.getParameter("width"));
+            if (width.doubleValue() <= 0) {
                 messageHandler.addMessage("Width must be positive.");
                 errors = true;
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             messageHandler.addMessage("Malformed width.");
             errors = true;
         }
 
-        int height = 0;
+        BigDecimal height = null;
         try {
-            height = Integer.parseInt(request.getParameter("height"));
-            if (height <= 0) {
-                messageHandler.addMessage("Height must be positive.");
+            height = new BigDecimal(request.getParameter("height"));
+            if (height.doubleValue() <= 0) {
+                messageHandler.addMessage("Width must be positive.");
                 errors = true;
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             messageHandler.addMessage("Malformed height.");
             errors = true;
         }
@@ -140,21 +141,26 @@ public class CalculatePriceServlet extends HttpServlet {
 
         PriceCalculator calculator = new PriceCalculator();
 
-        int widthMM = width;
-        int heightMM = height;
+        BigDecimal widthMeters = width;
+        BigDecimal heightMeters = height;
 
         if (messurement.equals("cm")) {
-            widthMM = width * 10;
+            widthMeters = width.divide(BigDecimal.valueOf(100.0));
+            heightMeters = height.divide(BigDecimal.valueOf(100.0));
         }
 
-        if (messurement.equals("m")) {
-            widthMM = width * 1000;
+        if (messurement.equals("mm")) {
+            widthMeters = width.divide(BigDecimal.valueOf(1000.0));
+            heightMeters = height.divide(BigDecimal.valueOf(1000.0));
         }
-
-        request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMM, heightMM));
-
-        request.getRequestDispatcher(
-                "WEB-INF/calculate-price-result-template.jsp").forward(request, response);
+        
+        request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMeters, heightMeters).toString());
+        request.setAttribute("messurement", messurement);
+        request.setAttribute("width", width.doubleValue());
+        request.setAttribute("height", height.doubleValue());
+        request.setAttribute("glass", glassID);
+        request.setAttribute("frame", frameID);
+        request.getRequestDispatcher("WEB-INF/calculate-price-result-template.jsp").forward(request, response);
     }
 
     /**

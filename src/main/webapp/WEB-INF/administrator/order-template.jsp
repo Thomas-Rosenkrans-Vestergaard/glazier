@@ -2,13 +2,14 @@
 <%@ include file="jspf/top.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="jspf/top.jspf" %>
+<%@ include file="jspf/glasses-menu-template.jspf" %>
 <form class="main" method="POST">
 
     <div class="input-field col s12">
         <input id="id" type="number" class="validate" name="id" required="required" disabled="disabled" value="${order.getID()}">
         <label for="id">ID</label>
     </div>
-    
+
     <fieldset class="row">
         <p>Product dimensions.</p>
         <div class="input-field col s12">

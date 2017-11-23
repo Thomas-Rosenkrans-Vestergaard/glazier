@@ -1,20 +1,21 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package tvestergaard.glazier.database.frames;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
-public final class Frame extends FrameReference {
+/**
+ *
+ * @author Thomas
+ */
+public class FrameBuilder {
 
     private String name;
     private String description;
     private BigDecimal pricePerMeter;
-
-    public Frame(final int id, String name, String description, BigDecimal pricePerMillimeter) {
-        super(id);
-        this.name = name;
-        this.description = description;
-        this.pricePerMeter = pricePerMillimeter;
-    }
 
     public final String getName() {
         return name;
@@ -58,23 +59,4 @@ public final class Frame extends FrameReference {
         this.pricePerMeter = price;
         return true;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Frame other = (Frame) obj;
-        if (!Objects.equals(this.getID(), other.getID())) {
-            return false;
-        }
-        return true;
-    }
-
 }

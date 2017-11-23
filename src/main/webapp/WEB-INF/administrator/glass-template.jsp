@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ include file="jspf/top.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="jspf/top.jspf" %>
+<%@ include file="jspf/glasses-menu-template.jspf" %>
 <form method="POST" class="main">
 
     <div class="input-field col s12">
@@ -20,7 +20,7 @@
     </div>
 
     <div class="input-field col s12">
-        <input id="price_per_sm" type="number" class="validate" name="price_per_sm" required="required" value="${glass.getPricePerSquareMeter()}"/>
+        <input id="price_per_sm" type="number" class="validate" name="price_per_square_meter" required="required" value="${glass.getPricePerSquareMeter()}"/>
         <label for="price_per_sm">Price per square meter</label>
     </div>
 

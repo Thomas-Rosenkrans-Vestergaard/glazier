@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import tvestergaard.glazier.database.AbstractMysqlDAO;
@@ -87,7 +88,7 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
 
     @Override
     public void updateFrame(Frame frame) throws UnknownFrameException {
-        String update = String.format("UPDATE frames SET `name` = ?, `description` = ?, `price_per_m` = ? WHERE id = ?;");
+        String update = String.format("UPDATE frames SET `name` = ?, `description` = ?, `price_per_meter` = ? WHERE id = ?;");
 
         PreparedStatement statement = null;
 
@@ -100,7 +101,7 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
                 statement = connection.prepareStatement(update);
                 statement.setString(1, frame.getName());
                 statement.setString(2, frame.getDescription());
-                statement.setInt(3, frame.getPricePerMeter());
+                statement.setBigDecimal(3, frame.getPricePerMeter());
                 statement.setInt(4, frame.getID());
 
                 int updated = statement.executeUpdate();
@@ -135,10 +136,7 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
 
             String delete = String.format("DELETE FROM frames WHERE `id` = ?;");
 
-            PreparedStatement statement = null;
-
-            try {
-                statement = connection.prepareStatement(delete);
+            try (PreparedStatement statement = connection.prepareStatement(delete)) {
                 statement.setInt(1, frameReference.getID());
                 int updated = statement.executeUpdate();
 
@@ -151,10 +149,6 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
             } catch (SQLException | UnknownFrameReferenceException e) {
                 connection.rollback();
                 throw e;
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
             }
 
         } catch (UnknownFrameReferenceException e) {
@@ -164,12 +158,52 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
         }
     }
 
+    @Override
+    public Frame insertFrame(FrameBuilder builder) {
+
+        String frameSQL = String.format("INSERT INTO frames (name, description, price_per_meter) VALUES (?, ?, ?);");
+
+        PreparedStatement frameStatement = null;
+
+        try {
+
+            Connection connection = getConnection();
+
+            try {
+
+                frameStatement = connection.prepareStatement(frameSQL, Statement.RETURN_GENERATED_KEYS);
+                frameStatement.setString(1, builder.getName());
+                frameStatement.setString(2, builder.getDescription());
+                frameStatement.setBigDecimal(3, builder.getPricePerMeter());
+                frameStatement.executeUpdate();
+                
+                ResultSet insertedIndex = frameStatement.getGeneratedKeys();
+                insertedIndex.next();
+
+                connection.commit();
+
+                return getFrame(FrameReference.of(insertedIndex.getInt(1)));
+
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                if (frameStatement != null) {
+                    frameStatement.close();
+                }
+            }
+
+        } catch (SQLException | UnknownFrameReferenceException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     private Frame fromResultSet(ResultSet results) throws SQLException {
         return new Frame(
                 results.getInt("id"),
                 results.getString("name"),
                 results.getString("description"),
-                results.getInt("price_per_m")
+                results.getBigDecimal("price_per_meter")
         );
     }
 }

@@ -12,17 +12,12 @@
         <title>Administrator login</title>
     </head>
     <body>
-        <ul id="slide-out" class="side-nav">
-            <li><a href="index"><i class="material-icons">menu</i>Index</a></li>
-            <li><a href="orders"><i class="material-icons">book</i>Orders</a></li>
-            <li><a href="frames"><i class="material-icons">border_outer</i>Frames</a></li>
-            <li><a href="glasses"><i class="material-icons">crop_16_9</i>Glasses</a></li>
-        </ul>
-        <div class="fixed-action-btn">
-            <a data-activates="slide-out" class="button-collapse btn-floating btn-large red">
-                <i class="large material-icons">menu</i>
-            </a>
-        </div>
-        <script>
-            $(".button-collapse").sideNav();
-        </script>
+        <nav>
+            <ul id="nav-mobile">
+                <li><a href="index"><i class="material-icons left">menu</i>Index</a></li>
+                <li><a href="orders"><i class="material-icons left">book</i>Orders</a></li>
+                <li><a href="frames"><i class="material-icons left">border_outer</i>Frames</a></li>
+                <li><a href="glasses"><i class="material-icons left">crop_16_9</i>Glasses</a></li>
+            </ul>
+        </nav>
+        <div id="container">

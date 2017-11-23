@@ -5,9 +5,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import tvestergaard.glazier.database.AbstractMysqlDAO;
+import tvestergaard.glazier.database.frames.FrameReference;
+import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
 
 public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
 
@@ -87,7 +90,7 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
 
     @Override
     public void updateGlass(Glass glass) throws UnknownGlassException {
-        String update = String.format("UPDATE glass SET `name` = ?, `description` = ?, `price_per_m2` = ? WHERE id = ?;");
+        String update = String.format("UPDATE glass SET `name` = ?, `description` = ?, `price_per_square_meter` = ? WHERE id = ?;");
 
         PreparedStatement statement = null;
 
@@ -100,7 +103,7 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
                 statement = connection.prepareStatement(update);
                 statement.setString(1, glass.getName());
                 statement.setString(2, glass.getDescription());
-                statement.setInt(3, glass.getPricePerSquareMeter());
+                statement.setBigDecimal(3, glass.getPricePerSquareMeter());
                 statement.setInt(4, glass.getID());
 
                 int updated = statement.executeUpdate();
@@ -135,10 +138,7 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
 
             String delete = String.format("DELETE FROM glass WHERE `id` = ?;");
 
-            PreparedStatement statement = null;
-
-            try {
-                statement = connection.prepareStatement(delete);
+            try (PreparedStatement statement = connection.prepareStatement(delete)) {
                 statement.setInt(1, glassReference.getID());
                 int updated = statement.executeUpdate();
 
@@ -151,10 +151,6 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
             } catch (SQLException | UnknownGlassReferenceException e) {
                 connection.rollback();
                 throw e;
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
             }
 
         } catch (UnknownGlassReferenceException e) {
@@ -164,12 +160,51 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
         }
     }
 
+    @Override
+    public Glass insertGlass(GlassBuilder builder) {
+
+        String glassSQL = String.format("INSERT INTO glass (name, description, price_per_square_meter) VALUES (?, ?, ?);");
+
+        PreparedStatement glassStatement = null;
+
+        try {
+
+            Connection connection = getConnection();
+
+            try {
+
+                glassStatement = connection.prepareStatement(glassSQL, Statement.RETURN_GENERATED_KEYS);
+                glassStatement.setString(1, builder.getName());
+                glassStatement.setString(2, builder.getDescription());
+                glassStatement.setBigDecimal(3, builder.getPricePerSquareMeter());
+                glassStatement.executeUpdate();
+
+                connection.commit();
+
+                ResultSet insertedIndex = glassStatement.getGeneratedKeys();
+                insertedIndex.next();
+                return getGlass(GlassReference.of(insertedIndex.getInt(1)));
+
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                if (glassStatement != null) {
+                    glassStatement.close();
+                }
+            }
+
+        } catch (SQLException | UnknownGlassReferenceException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     private Glass fromResultSet(ResultSet results) throws SQLException {
         return new Glass(
                 results.getInt("id"),
                 results.getString("name"),
                 results.getString("description"),
-                results.getInt("price_per_m2")
+                results.getBigDecimal("price_per_square_meter")
         );
     }
 }

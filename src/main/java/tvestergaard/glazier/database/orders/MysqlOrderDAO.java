@@ -107,8 +107,8 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
                 statement = connection.prepareStatement(update);
                 statement.setInt(1, order.getFrame().getID());
                 statement.setInt(2, order.getGlass().getID());
-                statement.setInt(3, order.getWidthMM());
-                statement.setInt(4, order.getHeightMM());
+                statement.setInt(3, order.getWidthMillimeters());
+                statement.setInt(4, order.getHeightMillimeters());
                 statement.setString(5, order.getCustomerName());
                 statement.setString(6, order.getCustomerAddress());
                 statement.setString(7, order.getCustomerZip());
@@ -194,8 +194,8 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
                 statement = connection.prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
                 statement.setInt(1, order.getFrame().getID());
                 statement.setInt(2, order.getGlass().getID());
-                statement.setInt(3, order.getWidthMM());
-                statement.setInt(4, order.getHeightMM());
+                statement.setInt(3, order.getWidthMillimeters());
+                statement.setInt(4, order.getHeightMillimeters());
                 statement.setString(5, order.getCustomerName());
                 statement.setString(6, order.getCustomerAddress());
                 statement.setString(7, order.getCustomerZip());
@@ -206,10 +206,7 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
                 statement.executeUpdate();
 
                 ResultSet generatedKeys = statement.getGeneratedKeys();
-
-                if (!generatedKeys.first()) {
-                    throw new IllegalStateException();
-                }
+                generatedKeys.first();
 
                 connection.commit();
 
@@ -238,13 +235,13 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
                         results.getInt("frames.id"),
                         results.getString("frames.name"),
                         results.getString("frames.description"),
-                        results.getInt("price_per_m")
+                        results.getBigDecimal("price_per_meter")
                 ),
                 new Glass(
                         results.getInt("glass.id"),
                         results.getString("glass.name"),
                         results.getString("glass.description"),
-                        results.getInt("price_per_m2")
+                        results.getBigDecimal("price_per_square_meter")
                 ),
                 results.getString("customer_name"),
                 results.getString("customer_address"),

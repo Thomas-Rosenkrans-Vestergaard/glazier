@@ -40,6 +40,8 @@ public class IndexServlet extends HttpServlet {
             return;
         }
 
+        new MessageHelper(request);
+        
         request.setAttribute("title", "Administrator page");
         request.getRequestDispatcher("/WEB-INF/administrator/index-template.jsp").forward(request, response);
     }

@@ -1,0 +1,7 @@
+<%@ page pageEncoding="UTF-8" %>
+<nav>
+    <ul id="nav-mobile">
+        <li><a href="orders"><i class="material-icons left">list</i>List</a></li>
+        <li><a href="orders?action=create"><i class="material-icons left">create</i>Create</a></li>
+    </ul>
+</nav>

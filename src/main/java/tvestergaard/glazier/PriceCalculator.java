@@ -5,6 +5,8 @@
  */
 package tvestergaard.glazier;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import tvestergaard.glazier.database.frames.Frame;
 import tvestergaard.glazier.database.glass.Glass;
 
@@ -14,16 +16,16 @@ import tvestergaard.glazier.database.glass.Glass;
  */
 public class PriceCalculator {
 
-    public double calculatePrice(Frame frame, Glass glass, int widthMM, int heightMM) {
+    public BigDecimal calculatePrice(Frame frame, Glass glass, BigDecimal widthMeter, BigDecimal heightMeter) {
 
-        double price = 0.0;
+        BigDecimal price = BigDecimal.ZERO;
 
-        double framePricePerMM = (double)frame.getPricePerMeter() / 1000;
-        price += framePricePerMM * (widthMM * 2 + heightMM * 2);
-
-        int glassPricePerSM = glass.getPricePerSquareMeter();
-        double productAreaM = (double)widthMM * (double)heightMM / 1000000;
-        price += productAreaM * glassPricePerSM;
+        BigDecimal pricePerMeter = frame.getPricePerMeter();
+        price = price.add(widthMeter.multiply(BigDecimal.valueOf(2.0)).multiply(pricePerMeter));
+        price = price.add(heightMeter.multiply(BigDecimal.valueOf(2.0)).multiply(pricePerMeter));
+        
+        BigDecimal pricePerSquareMeter = glass.getPricePerSquareMeter();
+        price = price.add(pricePerSquareMeter.multiply(widthMeter.multiply(heightMeter)));
 
         return price;
     }

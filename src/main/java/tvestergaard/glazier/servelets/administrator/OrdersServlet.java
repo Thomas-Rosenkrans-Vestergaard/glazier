@@ -184,7 +184,7 @@ public class OrdersServlet extends HttpServlet {
 
             try {
                 int width = Integer.parseInt(request.getParameter("width"));
-                if (!orderBuilder.setWidthMM(width)) {
+                if (!orderBuilder.setWidthMillimeters(width)) {
                     messageHelper.addMessage("Invalid width.");
                     errors = true;
                 }
@@ -195,7 +195,7 @@ public class OrdersServlet extends HttpServlet {
 
             try {
                 int height = Integer.parseInt(request.getParameter("height"));
-                if (!orderBuilder.setHeightMM(height)) {
+                if (!orderBuilder.setHeightMillimeters(height)) {
                     messageHelper.addMessage("Invalid height.");
                     errors = true;
                 }
@@ -328,7 +328,7 @@ public class OrdersServlet extends HttpServlet {
 
             try {
                 int width = Integer.parseInt(request.getParameter("width"));
-                if (!order.setWidthMM(width)) {
+                if (!order.setWidthMillimeters(width)) {
                     messageHelper.addMessage("Invalid width.");
                     errors = true;
                 }
@@ -339,7 +339,7 @@ public class OrdersServlet extends HttpServlet {
 
             try {
                 int height = Integer.parseInt(request.getParameter("height"));
-                if (!order.setHeightMM(height)) {
+                if (!order.setHeightMillimeters(height)) {
                     messageHelper.addMessage("Invalid height.");
                     errors = true;
                 }

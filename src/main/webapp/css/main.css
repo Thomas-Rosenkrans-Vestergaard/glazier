@@ -37,10 +37,15 @@ h3 {
     font-size: 1.3rem;
 }
 
-#calculate-price-form button {
-    margin-top: 20px;
+#order-product-result{
+    float:left;
 }
 
-#administrator-login-form {
-    margin-top: 40px;
+#order-product-result-form {
+    float:right;
+    margin-top: 25px;
+}
+
+.clear{
+    overflow:auto;
 }

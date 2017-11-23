@@ -8,6 +8,7 @@ package tvestergaard.glazier.servelets.administrator;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,7 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 import tvestergaard.glazier.AdministratorHelper;
 import tvestergaard.glazier.MessageHelper;
 import tvestergaard.glazier.database.DefaultMysqlSource;
+import tvestergaard.glazier.database.frames.Frame;
+import tvestergaard.glazier.database.frames.FrameBuilder;
+import tvestergaard.glazier.database.frames.FrameDAO;
+import tvestergaard.glazier.database.frames.MysqlFrameDAO;
 import tvestergaard.glazier.database.glass.Glass;
+import tvestergaard.glazier.database.glass.GlassBuilder;
 import tvestergaard.glazier.database.glass.GlassDAO;
 import tvestergaard.glazier.database.glass.GlassReference;
 import tvestergaard.glazier.database.glass.MysqlGlassDAO;
@@ -51,6 +57,12 @@ public class GlassesServlet extends HttpServlet {
 
         MessageHelper messageHelper = new MessageHelper(request);
 
+        String action = request.getParameter("action");
+        if (action != null && action.equals("create")) {
+            handleCreateGet(request, response);
+            return;
+        }
+        
         String queryId = request.getParameter("id");
 
         if (queryId == null) {
@@ -78,6 +90,12 @@ public class GlassesServlet extends HttpServlet {
             response.sendRedirect("glasses");
         }
     }
+    
+    private void handleCreateGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("title", "Create glass");
+        request.getRequestDispatcher("/WEB-INF/administrator/glass-create-template.jsp").forward(request, response);
+    }
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -100,7 +118,7 @@ public class GlassesServlet extends HttpServlet {
         MessageHelper messageHelper = new MessageHelper(request);
 
         String action = request.getParameter("action");
-        
+
         if (action.equals("delete")) {
             handleDelete(request, response, messageHelper);
             return;
@@ -108,6 +126,11 @@ public class GlassesServlet extends HttpServlet {
 
         if (action.equals("update")) {
             handleUpdate(request, response, messageHelper);
+            return;
+        }
+        
+        if (action.equals("create")) {
+            handleCreatePost(request, response, messageHelper);
             return;
         }
 
@@ -170,8 +193,14 @@ public class GlassesServlet extends HttpServlet {
                 errors = true;
             }
 
-            if (!glass.setPricePerSquareMeter(request.getParameter("price_per_sm"))) {
-                messageHelper.addMessage("Malformed price per meter.");
+            try {
+                BigDecimal decimal = new BigDecimal(request.getParameter("price_per_square_meter"));
+                if (!glass.setPricePerSquareMeter(decimal)) {
+                    messageHelper.addMessage("Invalid price.");
+                    errors = true;
+                }
+            } catch (NumberFormatException | NullPointerException e) {
+                messageHelper.addMessage("Malformed price.");
                 errors = true;
             }
 
@@ -188,6 +217,54 @@ public class GlassesServlet extends HttpServlet {
             response.sendRedirect("glasses");
         } catch (UnknownGlassReferenceException e) {
             messageHelper.addMessage("Unknown id when attempting to delete glass. No glass was deleted.");
+            response.sendRedirect("glasses");
+        }
+    }
+    
+    private void handleCreatePost(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
+            throws ServletException, IOException {
+
+        try {
+
+            GlassBuilder glassBuilder = new GlassBuilder();
+
+            MysqlDataSource source = DefaultMysqlSource.getSource();
+            GlassDAO glassDAO = new MysqlGlassDAO(source);
+
+            boolean errors = false;
+
+            if (!glassBuilder.setName(request.getParameter("name"))) {
+                messageHelper.addMessage("Malformed name.");
+                errors = true;
+            }
+
+            if (!glassBuilder.setDescription(request.getParameter("description"))) {
+                messageHelper.addMessage("Malformed description.");
+                errors = true;
+            }
+
+            try {
+                BigDecimal decimal = new BigDecimal(request.getParameter("price_per_square_meter"));
+                if (!glassBuilder.setPricePerSquareMeter(decimal)) {
+                    messageHelper.addMessage("Invalid price.");
+                    errors = true;
+                }
+            } catch (NumberFormatException | NullPointerException e) {
+                messageHelper.addMessage("Malformed price.");
+                errors = true;
+            }
+
+            if (errors) {
+                response.sendRedirect("orders?action=create");
+                return;
+            }
+
+            Glass glass = glassDAO.insertGlass(glassBuilder);
+            messageHelper.addMessage("The glass was successfully created.");
+            response.sendRedirect("glasses?id=" + glass.getID());
+        } catch (IllegalStateException e) {
+            messageHelper.addMessage("Error while attempting to insert glass. No glass was created.");
+            e.printStackTrace();
             response.sendRedirect("glasses");
         }
     }

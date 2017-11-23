@@ -11,4 +11,6 @@ public interface GlassDAO {
     void updateGlass(Glass glass) throws UnknownGlassException;
 
     void deleteGlass(GlassReference glassReference) throws UnknownGlassReferenceException;
+    
+    Glass insertGlass(GlassBuilder builder);
 }
