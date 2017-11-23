@@ -3,8 +3,10 @@ package tvestergaard.glazier.database.orders;
 import java.util.List;
 import tvestergaard.glazier.database.frames.Frame;
 import tvestergaard.glazier.database.frames.UnknownFrameException;
+import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
 import tvestergaard.glazier.database.glass.Glass;
 import tvestergaard.glazier.database.glass.UnknownGlassException;
+import tvestergaard.glazier.database.glass.UnknownGlassReferenceException;
 
 public interface OrderDAO {
 
@@ -16,6 +18,6 @@ public interface OrderDAO {
 
     void deleteOrder(OrderReference orderReference) throws UnknownOrderReferenceException;
 
-    Order insertOrder(int widthMM, int heightMM, Frame frame, Glass glass, String customerName, String customerAddress, String customerZip, String customerCity, String customerEmail, String customerPhone)
-            throws UnknownFrameException, UnknownGlassException;
+    Order insertOrder(OrderBuilder builder)
+            throws UnknownFrameReferenceException, UnknownGlassReferenceException;
 }

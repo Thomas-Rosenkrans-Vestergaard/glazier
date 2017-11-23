@@ -41,14 +41,14 @@
         <select id="glass-type-select" name="glass" required="required">
             <option value="" disabled selected>Chose the type of glass to use on the product.</option>
             <c:forEach items="${glasses}" var="glass">
-                <option value="${glass.getId()}">${glass.getName()}</option>
+                <option value="${glass.getID()}">${glass.getName()}</option>
             </c:forEach>
         </select>
 
         <select id="frame-select" name="frame" required="required">
             <option value="" disabled selected>Chose the frame to use on the product</option>
             <c:forEach items="${frames}" var="frame">
-                <option value="${frame.getId()}">${frame.getName()}</option>
+                <option value="${frame.getID()}">${frame.getName()}</option>
             </c:forEach>
         </select>
 

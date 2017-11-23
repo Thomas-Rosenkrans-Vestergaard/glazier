@@ -5,11 +5,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import tvestergaard.glazier.database.AbstractMysqlDAO;
 import tvestergaard.glazier.database.frames.Frame;
 import tvestergaard.glazier.database.frames.UnknownFrameException;
+import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
 import tvestergaard.glazier.database.glass.Glass;
 import tvestergaard.glazier.database.glass.UnknownGlassException;
 import tvestergaard.glazier.database.glass.UnknownGlassReferenceException;
@@ -121,6 +123,8 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
                     throw new UnknownOrderException(order);
                 }
 
+                connection.commit();
+
             } catch (SQLException | UnknownOrderException e) {
                 connection.rollback();
                 throw e;
@@ -143,7 +147,7 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
 
             Connection connection = getConnection();
 
-            String delete = String.format("DELETE FROM orders WHERE `id` = ?;");
+            String delete = String.format("DELETE FROM orders WHERE id = ?;");
 
             PreparedStatement statement = null;
 
@@ -175,8 +179,54 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
     }
 
     @Override
-    public Order insertOrder(int widthMM, int heightMM, Frame frame, Glass glass, String customerName, String customerAddress, String customerZip, String customerCity, String customerEmail, String customerPhone) throws UnknownFrameException, UnknownGlassException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Order insertOrder(OrderBuilder order) throws UnknownFrameReferenceException, UnknownGlassReferenceException {
+
+        String update = "INSERT INTO orders (frame, glass, width_mm, height_mm, customer_name, customer_address, customer_zip, customer_city, customer_email, customer_phone) VALUES "
+                + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+
+            Connection connection = getConnection();
+            PreparedStatement statement = null;
+
+            try {
+
+                statement = connection.prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
+                statement.setInt(1, order.getFrame().getID());
+                statement.setInt(2, order.getGlass().getID());
+                statement.setInt(3, order.getWidthMM());
+                statement.setInt(4, order.getHeightMM());
+                statement.setString(5, order.getCustomerName());
+                statement.setString(6, order.getCustomerAddress());
+                statement.setString(7, order.getCustomerZip());
+                statement.setString(8, order.getCustomerCity());
+                statement.setString(9, order.getCustomerEmail());
+                statement.setString(10, order.getCustomerPhone());
+
+                statement.executeUpdate();
+
+                ResultSet generatedKeys = statement.getGeneratedKeys();
+
+                if (!generatedKeys.first()) {
+                    throw new IllegalStateException();
+                }
+
+                connection.commit();
+
+                return getOrder(OrderReference.of(generatedKeys.getInt(1)));
+
+            } catch (SQLException | UnknownOrderReferenceException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                if (statement != null) {
+                    statement.close();
+                }
+            }
+
+        } catch (SQLException | UnknownOrderReferenceException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private Order fromResultSet(ResultSet results) throws SQLException {

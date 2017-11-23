@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import tvestergaard.glazier.database.AbstractMysqlDAO;
-import tvestergaard.glazier.database.frames.UnknownFrameException;
-import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
 
 public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
 
@@ -106,6 +104,7 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
                 statement.setInt(4, glass.getID());
 
                 int updated = statement.executeUpdate();
+
                 if (updated < 1) {
                     throw new UnknownGlassException(glass);
                 }
@@ -164,7 +163,7 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
             throw new IllegalStateException(e);
         }
     }
-   
+
     private Glass fromResultSet(ResultSet results) throws SQLException {
         return new Glass(
                 results.getInt("id"),

@@ -1,34 +1,30 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package tvestergaard.glazier.database.orders;
 
 import tvestergaard.glazier.database.frames.Frame;
-import tvestergaard.glazier.database.glass.Glass;
+import tvestergaard.glazier.database.frames.FrameReference;
+import tvestergaard.glazier.database.glass.GlassReference;
 
-public final class Order extends OrderReference {
+/**
+ *
+ * @author Skole
+ */
+public class OrderBuilder {
 
-    private int widthMM;
-    private int heightMM;
-    private Frame frame;
-    private Glass glass;
+    private int widthMM = 0;
+    private int heightMM = 0;
+    private FrameReference frame;
+    private GlassReference glass;
     private String customerName;
     private String customerAddress;
     private String customerZip;
     private String customerCity;
     private String customerEmail;
     private String customerPhone;
-
-    public Order(int id, int widthMM, int heightMM, Frame frame, Glass glass, String customerName, String customerAddress, String customerZip, String customerCity, String customerEmail, String customerPhone) {
-        super(id);
-        this.widthMM = widthMM;
-        this.heightMM = heightMM;
-        this.frame = frame;
-        this.glass = glass;
-        this.customerName = customerName;
-        this.customerAddress = customerAddress;
-        this.customerZip = customerZip;
-        this.customerCity = customerCity;
-        this.customerEmail = customerEmail;
-        this.customerPhone = customerPhone;
-    }
 
     public int getWidthMM() {
         return widthMM;
@@ -55,11 +51,11 @@ public final class Order extends OrderReference {
         return true;
     }
 
-    public Frame getFrame() {
+    public FrameReference getFrame() {
         return frame;
     }
 
-    public boolean setFrame(Frame frame) {
+    public boolean setFrame(FrameReference frame) {
         if (frame == null) {
             return false;
         }
@@ -68,11 +64,11 @@ public final class Order extends OrderReference {
         return true;
     }
 
-    public Glass getGlass() {
+    public GlassReference getGlass() {
         return glass;
     }
 
-    public boolean setGlass(Glass glass) {
+    public boolean setGlass(GlassReference glass) {
         if (glass == null) {
             return false;
         }

@@ -14,11 +14,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import tvestergaard.glazier.MessageHelper;
+import tvestergaard.glazier.PriceCalculator;
 import tvestergaard.glazier.database.DefaultMysqlSource;
+import tvestergaard.glazier.database.frames.Frame;
 import tvestergaard.glazier.database.frames.FrameDAO;
+import tvestergaard.glazier.database.frames.FrameReference;
 import tvestergaard.glazier.database.frames.MysqlFrameDAO;
+import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
+import tvestergaard.glazier.database.glass.Glass;
 import tvestergaard.glazier.database.glass.GlassDAO;
+import tvestergaard.glazier.database.glass.GlassReference;
 import tvestergaard.glazier.database.glass.MysqlGlassDAO;
+import tvestergaard.glazier.database.glass.UnknownGlassReferenceException;
 
 /**
  *
@@ -50,44 +57,104 @@ public class CalculatePriceServlet extends HttpServlet {
         FrameDAO frameDAO = new MysqlFrameDAO(source);
         request.setAttribute("glasses", glassDAO.getGlasses());
         request.setAttribute("frames", frameDAO.getFrames());
-        request.getRequestDispatcher("WEB-INF/calculate-price-template.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/calculate-price-template.jsp").forward(request, response);
     }
 
     private void handleSubmit(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String messurement = request.getParameter("messurement");
-        String width = request.getParameter("width");
-        String height = request.getParameter("height");
-        String glass = request.getParameter("glass");
-        String frame = request.getParameter("frame");
 
         MessageHelper messageHandler = new MessageHelper(request);
+
         boolean errors = false;
 
-        if (messurement == null || width == null || height == null | glass == null || frame == null) {
-            messageHandler.addMessage("Incomplete form data.");
+        String messurement = request.getParameter("messurement");
+        if (!messurement.equals("mm") && !messurement.equals("cm") && !messurement.equals("m")) {
+            messageHandler.addMessage("Invalid messurement.");
             errors = true;
-        } 
-        
-        if(errors == false){
-
-            if (!messurement.equals("mm") && !messurement.equals("cm") && !messurement.equals("m")) {
-                messageHandler.addMessage("Invalid messurement");
-                errors = true;
-            }
-
-            if (!validInteger(width)) {
-                messageHandler.addMessage("Invalid width.");
-                errors = true;
-            }
-
         }
 
-        request.getRequestDispatcher("WEB-INF/calculate-price-template.jsp").forward(request, response);
-    }
-    
-    private boolean validInteger(String integer){
-        return true;
+        int width = 0;
+        try {
+            width = Integer.parseInt(request.getParameter("width"));
+            if (width <= 0) {
+                messageHandler.addMessage("Width must be positive.");
+                errors = true;
+            }
+        } catch (NumberFormatException e) {
+            messageHandler.addMessage("Malformed width.");
+            errors = true;
+        }
+
+        int height = 0;
+        try {
+            height = Integer.parseInt(request.getParameter("height"));
+            if (height <= 0) {
+                messageHandler.addMessage("Height must be positive.");
+                errors = true;
+            }
+        } catch (NumberFormatException e) {
+            messageHandler.addMessage("Malformed height.");
+            errors = true;
+        }
+
+        int glassID = 0;
+        try {
+            glassID = Integer.parseInt(request.getParameter("glass"));
+        } catch (NumberFormatException e) {
+            messageHandler.addMessage("Malformed glass.");
+            errors = true;
+        }
+
+        int frameID = 0;
+        try {
+            frameID = Integer.parseInt(request.getParameter("frame"));
+        } catch (NumberFormatException e) {
+            messageHandler.addMessage("Malformed frame.");
+            errors = true;
+        }
+
+        if (errors) {
+            response.sendRedirect("calculate-price");
+            return;
+        }
+
+        MysqlDataSource source = DefaultMysqlSource.getSource();
+
+        Frame frame = null;
+        try {
+            FrameDAO frameDAO = new MysqlFrameDAO(source);
+            frame = frameDAO.getFrame(FrameReference.of(frameID));
+        } catch (UnknownFrameReferenceException e) {
+            messageHandler.addMessage("Unknown frame id.");
+            errors = true;
+        }
+
+        Glass glass = null;
+        try {
+            GlassDAO glassDAO = new MysqlGlassDAO(source);
+            glass = glassDAO.getGlass(GlassReference.of(glassID));
+        } catch (UnknownGlassReferenceException e) {
+            messageHandler.addMessage("Unknown glass id.");
+            errors = true;
+        }
+
+        PriceCalculator calculator = new PriceCalculator();
+
+        int widthMM = width;
+        int heightMM = height;
+
+        if (messurement.equals("cm")) {
+            widthMM = width * 10;
+        }
+
+        if (messurement.equals("m")) {
+            widthMM = width * 1000;
+        }
+
+        request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMM, heightMM));
+
+        request.getRequestDispatcher(
+                "WEB-INF/calculate-price-result-template.jsp").forward(request, response);
     }
 
     /**

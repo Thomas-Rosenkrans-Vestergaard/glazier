@@ -1,10 +1,6 @@
 package tvestergaard.glazier.database.glass;
 
 import java.util.List;
-import tvestergaard.glazier.database.frames.Frame;
-import tvestergaard.glazier.database.frames.FrameReference;
-import tvestergaard.glazier.database.frames.UnknownFrameException;
-import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
 
 public interface GlassDAO {
 
