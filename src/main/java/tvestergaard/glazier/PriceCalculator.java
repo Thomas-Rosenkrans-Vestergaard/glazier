@@ -20,7 +20,13 @@ public class PriceCalculator {
      * @param heightMillimeters The height of the window in millimeters.
      * @return The price of the window.
      */
-    public BigDecimal calculatePrice(Frame frame, Glass glass, BigDecimal widthMillimeters, BigDecimal heightMillimeters) {
+    public BigDecimal calculatePrice(Frame frame, Glass glass, BigDecimal widthMillimeters, BigDecimal heightMillimeters) throws IllegalDimensionsException {
+
+        int compareWidth = widthMillimeters.compareTo(BigDecimal.ZERO);
+        int compareHeight = heightMillimeters.compareTo(BigDecimal.ZERO);
+        if (compareWidth == -1 || compareWidth == 0 || compareHeight == -1 || compareHeight == 0) {
+            throw new IllegalDimensionsException();
+        }
 
         BigDecimal price = BigDecimal.ZERO;
 
