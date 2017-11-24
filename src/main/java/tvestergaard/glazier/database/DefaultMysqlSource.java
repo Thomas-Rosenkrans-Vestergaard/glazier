@@ -9,8 +9,8 @@ public class DefaultMysqlSource extends MysqlDataSource {
      */
     public DefaultMysqlSource() {
         setServerName("localhost");
-        setUser("root");
-        setPassword("2231302509");
+        setUser("thomas");
+        setPassword("1733");
         setDatabaseName("glazier");
     }
 }
