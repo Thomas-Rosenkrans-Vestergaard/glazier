@@ -156,7 +156,7 @@ public class CalculatePriceServlet extends HttpServlet {
             heightMillimeters = height.multiply(BigDecimal.valueOf(1000));
         }
 
-        request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMillimeters, heightMillimeters).toString());
+        request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMillimeters, heightMillimeters).setScale(2).toString());
         request.setAttribute("messurement", messurement);
         request.setAttribute("width", width.doubleValue());
         request.setAttribute("height", height.doubleValue());
