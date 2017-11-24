@@ -20,6 +20,7 @@
                     <li><a href="index">Front page</a></li>
                     <li><a href="calculate-price">Calculate price</a></li>
                     <li><a href="order-product">Order products</a></li>
+                    <li><a href="administrator/login">Administrator</a></li>
                 </ul>
             </nav>
         </header>

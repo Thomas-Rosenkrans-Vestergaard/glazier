@@ -91,8 +91,7 @@ public class OrderProductServlet extends HttpServlet {
                 request.setAttribute("fillGlass", glass);
             }
         }
-
-        MysqlDataSource source = new DefaultMysqlSource();
+        
         GlassDAO glassDAO = new MysqlGlassDAO(source);
         FrameDAO frameDAO = new MysqlFrameDAO(source);
         request.setAttribute("glasses", glassDAO.getGlasses());

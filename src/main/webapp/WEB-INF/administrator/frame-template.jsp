@@ -20,7 +20,7 @@
     </div>
 
     <div class="input-field col s12">
-        <input id="price_per_meter" type="number" class="validate" name="price_per_meter" required="required" value="${frame.getPricePerMeter()}"/>
+        <input id="price_per_meter" type="number" step=".01" class="validate" name="price_per_meter" required="required" value="${frame.getPricePerMeter()}"/>
         <label for="price_per_meter">Price per meter</label>
     </div>
 

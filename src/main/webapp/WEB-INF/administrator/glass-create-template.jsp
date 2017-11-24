@@ -15,7 +15,7 @@
     </div>
 
     <div class="input-field col s12">
-        <input id="price_per_square_meter" type="number" class="validate" name="price_per_square_meter" required="required">
+        <input id="price_per_square_meter" step=".01" type="number" class="validate" name="price_per_square_meter" required="required">
         <label for="price_per_square_meter">Price per square meter</label>
     </div>
 
