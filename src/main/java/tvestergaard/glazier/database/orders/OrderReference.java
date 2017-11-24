@@ -1,28 +1,43 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tvestergaard.glazier.database.orders;
 
 /**
+ * References some {@link Order} using an internal id.
  *
  * @author Thomas
  */
 public class OrderReference {
-    private final int id;
 
-    public OrderReference(int id) {
-        this.id = id;
-    }
-    
-    public static OrderReference of(int id){
-        return new OrderReference(id);
+    /**
+     * The id of the referenced {@link Order}.
+     */
+    private final int orderID;
+
+    /**
+     * Creates a new {@link OrderReference}.
+     *
+     * @param orderID The id of the {@link Order} referenced.
+     */
+    public OrderReference(int orderID) {
+        this.orderID = orderID;
     }
 
+    /**
+     * Creates a new {@link OrderReference}. Provides a more concise method for
+     * creating instances of {@link OrderReference}.
+     *
+     * @param orderID The id of the {@link Order} referenced.
+     * @return The newly created {@link OrderReference}.
+     */
+    public static OrderReference of(int orderID) {
+        return new OrderReference(orderID);
+    }
+
+    /**
+     * Returns the id of the referenced {@link Order}.
+     *
+     * @return The id of the referenced {@link Order}.
+     */
     public int getID() {
-        return id;
+        return orderID;
     }
-    
-    
 }

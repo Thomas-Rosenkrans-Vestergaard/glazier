@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tvestergaard.glazier.servelets;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,12 +22,14 @@ import tvestergaard.glazier.database.glass.GlassReference;
 import tvestergaard.glazier.database.glass.MysqlGlassDAO;
 import tvestergaard.glazier.database.glass.UnknownGlassReferenceException;
 
-/**
- *
- * @author Thomas
- */
 @WebServlet(name = "CalculateServelet", urlPatterns = {"/calculate-price"})
 public class CalculatePriceServlet extends HttpServlet {
+
+    /**
+     * The {@link MysqlDataSource} used to save changes made by the
+     * administrator.
+     */
+    private MysqlDataSource source = new DefaultMysqlSource();
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -61,6 +57,14 @@ public class CalculatePriceServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/calculate-price-template.jsp").forward(request, response);
     }
 
+    /**
+     * Handles the calculate price form submit.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     private void handleSubmit(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -119,8 +123,6 @@ public class CalculatePriceServlet extends HttpServlet {
             return;
         }
 
-        MysqlDataSource source = DefaultMysqlSource.getSource();
-
         Frame frame = null;
         try {
             FrameDAO frameDAO = new MysqlFrameDAO(source);
@@ -141,20 +143,20 @@ public class CalculatePriceServlet extends HttpServlet {
 
         PriceCalculator calculator = new PriceCalculator();
 
-        BigDecimal widthMeters = width;
-        BigDecimal heightMeters = height;
+        BigDecimal widthMillimeters = width;
+        BigDecimal heightMillimeters = height;
 
         if (messurement.equals("cm")) {
-            widthMeters = width.divide(BigDecimal.valueOf(100.0));
-            heightMeters = height.divide(BigDecimal.valueOf(100.0));
+            widthMillimeters = width.multiply(BigDecimal.valueOf(10));
+            heightMillimeters = height.multiply(BigDecimal.valueOf(10));
         }
 
-        if (messurement.equals("mm")) {
-            widthMeters = width.divide(BigDecimal.valueOf(1000.0));
-            heightMeters = height.divide(BigDecimal.valueOf(1000.0));
+        if (messurement.equals("m")) {
+            widthMillimeters = width.multiply(BigDecimal.valueOf(1000));
+            heightMillimeters = height.multiply(BigDecimal.valueOf(1000));
         }
-        
-        request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMeters, heightMeters).toString());
+
+        request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMillimeters, heightMillimeters).toString());
         request.setAttribute("messurement", messurement);
         request.setAttribute("width", width.doubleValue());
         request.setAttribute("height", height.doubleValue());

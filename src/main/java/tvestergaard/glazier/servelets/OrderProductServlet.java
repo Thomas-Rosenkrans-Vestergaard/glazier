@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tvestergaard.glazier.servelets;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
@@ -27,12 +22,14 @@ import tvestergaard.glazier.database.orders.Order;
 import tvestergaard.glazier.database.orders.OrderBuilder;
 import tvestergaard.glazier.database.orders.OrderDAO;
 
-/**
- *
- * @author Thomas
- */
 @WebServlet(name = "OrderProductServlet", urlPatterns = {"/order-product"})
 public class OrderProductServlet extends HttpServlet {
+
+    /**
+     * The {@link MysqlDataSource} used to save changes made by the
+     * administrator.
+     */
+    private MysqlDataSource source = new DefaultMysqlSource();
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -123,9 +120,9 @@ public class OrderProductServlet extends HttpServlet {
         try {
 
             OrderBuilder orderBuilder = new OrderBuilder();
-
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             OrderDAO orderDAO = new MysqlOrderDAO(source);
+            FrameDAO frameDAO = new MysqlFrameDAO(source);
+            GlassDAO glassDAO = new MysqlGlassDAO(source);
 
             boolean errors = false;
 
@@ -156,7 +153,8 @@ public class OrderProductServlet extends HttpServlet {
             }
 
             try {
-                if (!orderBuilder.setFrame(FrameReference.of(Integer.parseInt(request.getParameter("frame"))))) {
+                int frameID = Integer.parseInt(request.getParameter("frame"));
+                if (!orderBuilder.setFrame(frameDAO.getFrame(FrameReference.of(frameID)))) {
                     messageHelper.addMessage("Incorrect frame.");
                     errors = true;
                 }
@@ -166,7 +164,8 @@ public class OrderProductServlet extends HttpServlet {
             }
 
             try {
-                if (!orderBuilder.setGlass(GlassReference.of(Integer.parseInt(request.getParameter("glass"))))) {
+                int glassID = Integer.parseInt(request.getParameter("glass"));
+                if (!orderBuilder.setGlass(glassDAO.getGlass(GlassReference.of(glassID)))) {
                     messageHelper.addMessage("Incorrect glass.");
                     errors = true;
                 }

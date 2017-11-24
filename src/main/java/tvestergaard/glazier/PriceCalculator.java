@@ -1,31 +1,38 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tvestergaard.glazier;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import tvestergaard.glazier.database.frames.Frame;
 import tvestergaard.glazier.database.glass.Glass;
 
 /**
+ * Calculates the price of a window.
  *
  * @author Skole
  */
 public class PriceCalculator {
 
-    public BigDecimal calculatePrice(Frame frame, Glass glass, BigDecimal widthMeter, BigDecimal heightMeter) {
+    /**
+     * Calculate the price of a window using the provided parameters.
+     *
+     * @param frame The {@link Frame} to put on the window.
+     * @param glass The {@link Glass} to put on the window.
+     * @param widthMillimeters The width of the window in millimeters.
+     * @param heightMillimeters The height of the window in millimeters.
+     * @return The price of the window.
+     */
+    public BigDecimal calculatePrice(Frame frame, Glass glass, BigDecimal widthMillimeters, BigDecimal heightMillimeters) {
 
         BigDecimal price = BigDecimal.ZERO;
 
+        BigDecimal widthMeters = widthMillimeters.divide(BigDecimal.valueOf(1000));
+        BigDecimal heightMeters = heightMillimeters.divide(BigDecimal.valueOf(1000));
+
         BigDecimal pricePerMeter = frame.getPricePerMeter();
-        price = price.add(widthMeter.multiply(BigDecimal.valueOf(2.0)).multiply(pricePerMeter));
-        price = price.add(heightMeter.multiply(BigDecimal.valueOf(2.0)).multiply(pricePerMeter));
-        
+        price = price.add(widthMeters.multiply(BigDecimal.valueOf(2.0)).multiply(pricePerMeter));
+        price = price.add(heightMeters.multiply(BigDecimal.valueOf(2.0)).multiply(pricePerMeter));
+
         BigDecimal pricePerSquareMeter = glass.getPricePerSquareMeter();
-        price = price.add(pricePerSquareMeter.multiply(widthMeter.multiply(heightMeter)));
+        price = price.add(pricePerSquareMeter.multiply(widthMeters.multiply(heightMeters)));
 
         return price;
     }

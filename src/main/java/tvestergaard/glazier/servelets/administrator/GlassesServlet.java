@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tvestergaard.glazier.servelets.administrator;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,25 +11,21 @@ import javax.servlet.http.HttpServletResponse;
 import tvestergaard.glazier.AdministratorHelper;
 import tvestergaard.glazier.MessageHelper;
 import tvestergaard.glazier.database.DefaultMysqlSource;
-import tvestergaard.glazier.database.frames.Frame;
-import tvestergaard.glazier.database.frames.FrameBuilder;
-import tvestergaard.glazier.database.frames.FrameDAO;
-import tvestergaard.glazier.database.frames.MysqlFrameDAO;
 import tvestergaard.glazier.database.glass.Glass;
 import tvestergaard.glazier.database.glass.GlassBuilder;
-import tvestergaard.glazier.database.glass.GlassDAO;
 import tvestergaard.glazier.database.glass.GlassReference;
-import tvestergaard.glazier.database.glass.MysqlGlassDAO;
 import tvestergaard.glazier.database.glass.UnknownGlassReferenceException;
 import tvestergaard.glazier.database.glass.GlassDAO;
 import tvestergaard.glazier.database.glass.MysqlGlassDAO;
 
-/**
- *
- * @author Thomas
- */
 @WebServlet(name = "GlassServlet", urlPatterns = {"/administrator/glasses"})
 public class GlassesServlet extends HttpServlet {
+
+    /**
+     * The {@link MysqlDataSource} used to save changes made by the
+     * administrator.
+     */
+    private MysqlDataSource source = new DefaultMysqlSource();
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -62,11 +52,10 @@ public class GlassesServlet extends HttpServlet {
             handleCreateGet(request, response);
             return;
         }
-        
+
         String queryId = request.getParameter("id");
 
         if (queryId == null) {
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             GlassDAO glassDAO = new MysqlGlassDAO(source);
             request.setAttribute("glasses", glassDAO.getGlasses());
 
@@ -77,7 +66,6 @@ public class GlassesServlet extends HttpServlet {
 
         try {
             int id = Integer.parseInt(queryId);
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             GlassDAO glassDAO = new MysqlGlassDAO(source);
             request.setAttribute("glass", glassDAO.getGlass(GlassReference.of(id)));
             request.getRequestDispatcher("/WEB-INF/administrator/glass-template.jsp").forward(request, response);
@@ -90,7 +78,15 @@ public class GlassesServlet extends HttpServlet {
             response.sendRedirect("glasses");
         }
     }
-    
+
+    /**
+     * Serves the page where the administrator can create new {@link Glass}es.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     private void handleCreateGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setAttribute("title", "Create glass");
@@ -120,15 +116,15 @@ public class GlassesServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action.equals("delete")) {
-            handleDelete(request, response, messageHelper);
+            handleDeletePost(request, response, messageHelper);
             return;
         }
 
         if (action.equals("update")) {
-            handleUpdate(request, response, messageHelper);
+            handleUpdatePost(request, response, messageHelper);
             return;
         }
-        
+
         if (action.equals("create")) {
             handleCreatePost(request, response, messageHelper);
             return;
@@ -138,7 +134,17 @@ public class GlassesServlet extends HttpServlet {
         response.sendRedirect("glasses");
     }
 
-    private void handleDelete(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
+    /**
+     * Deletes a {@link Glass} after pressing the <code>DELETE</code> button.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @param messageHelper Instance of {@link MessageHelper} allowing the
+     * method to pass messages to the user.
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    private void handleDeletePost(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
             throws ServletException, IOException {
         String queryID = request.getParameter("id");
 
@@ -150,7 +156,6 @@ public class GlassesServlet extends HttpServlet {
 
         try {
             int id = Integer.parseInt(queryID);
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             GlassDAO glassDAO = new MysqlGlassDAO(source);
             glassDAO.deleteGlass(GlassReference.of(id));
             messageHelper.addMessage("The glass was successfully deleted.");
@@ -163,7 +168,17 @@ public class GlassesServlet extends HttpServlet {
         }
     }
 
-    private void handleUpdate(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
+    /**
+     * Updates a {@link Glass} after pressing the <code>UPDATE</code> button.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @param messageHelper Instance of {@link MessageHelper} allowing the
+     * method to pass messages to the user.
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    private void handleUpdatePost(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
             throws ServletException, IOException {
         String queryID = request.getParameter("id");
 
@@ -175,7 +190,6 @@ public class GlassesServlet extends HttpServlet {
 
         try {
             int id = Integer.parseInt(queryID);
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             GlassDAO glassDAO = new MysqlGlassDAO(source);
 
             GlassReference reference = GlassReference.of(id);
@@ -220,15 +234,23 @@ public class GlassesServlet extends HttpServlet {
             response.sendRedirect("glasses");
         }
     }
-    
+
+    /**
+     * Creates a {@link Glass} after pressing the <code>CREATE</code> button.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @param messageHelper Instance of {@link MessageHelper} allowing the
+     * method to pass messages to the user.
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     private void handleCreatePost(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
             throws ServletException, IOException {
 
         try {
 
             GlassBuilder glassBuilder = new GlassBuilder();
-
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             GlassDAO glassDAO = new MysqlGlassDAO(source);
 
             boolean errors = false;
@@ -264,7 +286,6 @@ public class GlassesServlet extends HttpServlet {
             response.sendRedirect("glasses?id=" + glass.getID());
         } catch (IllegalStateException e) {
             messageHelper.addMessage("Error while attempting to insert glass. No glass was created.");
-            e.printStackTrace();
             response.sendRedirect("glasses");
         }
     }

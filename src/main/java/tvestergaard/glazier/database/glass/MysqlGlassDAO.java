@@ -9,15 +9,30 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import tvestergaard.glazier.database.AbstractMysqlDAO;
-import tvestergaard.glazier.database.frames.FrameReference;
-import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
 
 public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
 
+    /**
+     * Creates a new {@link MysqlGlassDAO}.
+     *
+     * @param source The {@link MysqlDataSource} from which to access the data
+     * manipulated by the {@link MysqlGlassDAO}.
+     */
     public MysqlGlassDAO(MysqlDataSource source) {
         super(source);
     }
 
+    /**
+     * Retrieves and returns the {@link Glass} referenced by the provided
+     * {@link GlassReference} from the {@link GlassDAO}.
+     *
+     * @param glassReference The {@link GlassReference} referencing the
+     * {@link Glass} to retrieve return.
+     * @return The {@link Glass} referenced by the provided
+     * {@link GlassReference}.
+     * @throws UnknownGlassReferenceException When the provided
+     * {@link GlassReference} doesn't reference an existing {@link Glass}.
+     */
     @Override
     public Glass getGlass(GlassReference glassReference) throws UnknownGlassReferenceException {
 
@@ -54,6 +69,11 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
         }
     }
 
+    /**
+     * Retrieves and returns all the {@link Glass}es from the {@link GlassDAO}.
+     *
+     * @return The compelete list of {@link Glass}es.
+     */
     @Override
     public List<Glass> getGlasses() {
 
@@ -88,6 +108,13 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
         }
     }
 
+    /**
+     * Saves any changes to the provided {@link Glass} to the {@link GlassDAO}.
+     *
+     * @param glass The {@link Glass} to update.
+     * @throws UnknownGlassException When the provided {@link Glass} doesn't
+     * exist in the {@link GlassDAO}.
+     */
     @Override
     public void updateGlass(Glass glass) throws UnknownGlassException {
         String update = String.format("UPDATE glass SET `name` = ?, `description` = ?, `price_per_square_meter` = ? WHERE id = ?;");
@@ -130,6 +157,15 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
         }
     }
 
+    /**
+     * Deletes the {@link Glass} referenced by the provided
+     * {@link GlassReference} from the {@link GlassDAO}.
+     *
+     * @param glassReference The {@link GlassReference} referencing the
+     * {@link Glass} to delete from the {@link GlassDAO}.
+     * @throws UnknownGlassReferenceException When the referenced {@link Glass}
+     * doesn't exist in the {@link GlassDAO}.
+     */
     @Override
     public void deleteGlass(GlassReference glassReference) throws UnknownGlassReferenceException {
         try {
@@ -160,6 +196,14 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
         }
     }
 
+    /**
+     * Uses the provided {@link GlassBuilder} to insert a new {@link Glass} into
+     * the {@link GlassDAO}.
+     *
+     * @param builder The {@link GlassBuilder} to use to insert the new
+     * {@link Glass}.
+     * @return The newly created {@link Glass}.
+     */
     @Override
     public Glass insertGlass(GlassBuilder builder) {
 
@@ -199,6 +243,13 @@ public class MysqlGlassDAO extends AbstractMysqlDAO implements GlassDAO {
         }
     }
 
+    /**
+     * Creates a new {@link Glass} from the provided {@link ResultSet}.
+     *
+     * @param results The {@link ResultSet}.
+     * @return The newly created {@link Glass}.
+     * @throws SQLException When something goes wrong.
+     */
     private Glass fromResultSet(ResultSet results) throws SQLException {
         return new Glass(
                 results.getInt("id"),

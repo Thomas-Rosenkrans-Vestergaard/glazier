@@ -12,13 +12,29 @@ import tvestergaard.glazier.database.AbstractMysqlDAO;
 
 public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
 
+    /**
+     * Creates a new {@link MysqlFrameDAO}.
+     *
+     * @param source The {@link MysqlDataSource} from which to access the data
+     * manipulated by the {@link MysqlFrameDAO}.
+     */
     public MysqlFrameDAO(MysqlDataSource source) {
         super(source);
     }
 
+    /**
+     * Retrieves and returns the {@link Frame} referenced by the provided
+     * {@link FrameReference} from the {@link FrameDAO}.
+     *
+     * @param frameReference The {@link FrameReference} referencing the
+     * {@link Frame} to retrieve return.
+     * @return The {@link Frame} referenced by the provided
+     * {@link FrameReference}.
+     * @throws UnknownFrameReferenceException When the provided
+     * {@link FrameReference} doesn't reference an existing {@link Frame}.
+     */
     @Override
     public Frame getFrame(FrameReference frameReference) throws UnknownFrameReferenceException {
-
         try {
 
             PreparedStatement statement = null;
@@ -52,6 +68,11 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
         }
     }
 
+    /**
+     * Retrieves and returns all the {@link Frame}s from the {@link FrameDAO}.
+     *
+     * @return The compelete list of {@link Frame}s.
+     */
     @Override
     public List<Frame> getFrames() {
 
@@ -86,6 +107,13 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
         }
     }
 
+    /**
+     * Saves any changes to the provided {@link Frame} to the {@link FrameDAO}.
+     *
+     * @param frame The {@link Frame} to update.
+     * @throws UnknownFrameException When the provided {@link Frame} doesn't
+     * exist in the {@link FrameDAO}.
+     */
     @Override
     public void updateFrame(Frame frame) throws UnknownFrameException {
         String update = String.format("UPDATE frames SET `name` = ?, `description` = ?, `price_per_meter` = ? WHERE id = ?;");
@@ -127,6 +155,15 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
         }
     }
 
+    /**
+     * Deletes the {@link Frame} referenced by the provided
+     * {@link FrameReference} from the {@link FrameDAO}.
+     *
+     * @param frameReference The {@link FrameReference} referencing the
+     * {@link Frame} to delete from the {@link FrameDAO}.
+     * @throws UnknownFrameReferenceException When the referenced {@link Frame}
+     * doesn't exist in the {@link FrameDAO}.
+     */
     @Override
     public void deleteFrame(FrameReference frameReference) throws UnknownFrameReferenceException {
 
@@ -158,6 +195,14 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
         }
     }
 
+    /**
+     * Uses the provided {@link FrameBuilder} to insert a new {@link Frame} into
+     * the {@link FrameDAO}.
+     *
+     * @param builder The {@link FrameBuilder} to use to insert the new
+     * {@link Frame}.
+     * @return The newly created {@link Frame}.
+     */
     @Override
     public Frame insertFrame(FrameBuilder builder) {
 
@@ -176,7 +221,7 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
                 frameStatement.setString(2, builder.getDescription());
                 frameStatement.setBigDecimal(3, builder.getPricePerMeter());
                 frameStatement.executeUpdate();
-                
+
                 ResultSet insertedIndex = frameStatement.getGeneratedKeys();
                 insertedIndex.next();
 
@@ -198,6 +243,13 @@ public class MysqlFrameDAO extends AbstractMysqlDAO implements FrameDAO {
         }
     }
 
+    /**
+     * Creates a new {@link Frame} from the provided {@link ResultSet}.
+     *
+     * @param results The {@link ResultSet}.
+     * @return The newly created {@link Frame}.
+     * @throws SQLException When something goes wrong.
+     */
     private Frame fromResultSet(ResultSet results) throws SQLException {
         return new Frame(
                 results.getInt("id"),

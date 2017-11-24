@@ -1,24 +1,32 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tvestergaard.glazier.database.glass;
 
 /**
+ * Thrown when an {@link GlassReference} couldn't be found.
  *
  * @author Thomas
  */
 public class UnknownGlassReferenceException extends Exception {
 
-    private final GlassReference glassReference;
+    /**
+     * The unknown {@link GlassReference}.
+     */
+    private final GlassReference unknownGlassReference;
 
-    public UnknownGlassReferenceException(GlassReference glassReference) {
-        this.glassReference = glassReference;
+    /**
+     * Creates a new {@link UnknownGlassReferenceException}.
+     *
+     * @param unknownGlassReference The unknown {@link GlassReference}.
+     */
+    public UnknownGlassReferenceException(GlassReference unknownGlassReference) {
+        this.unknownGlassReference = unknownGlassReference;
     }
 
-    public GlassReference getGlassReference() {
-        return glassReference;
+    /**
+     * Returns the unknown {@link GlassReference}.
+     *
+     * @return The unknown {@link GlassReference}.
+     */
+    public GlassReference getUnknownGlassReference() {
+        return unknownGlassReference;
     }
-
 }

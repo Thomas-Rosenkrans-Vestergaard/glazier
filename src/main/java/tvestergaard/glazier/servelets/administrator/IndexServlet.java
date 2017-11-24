@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tvestergaard.glazier.servelets.administrator;
 
 import java.io.IOException;
@@ -11,14 +6,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import tvestergaard.glazier.AdministratorHelper;
 import tvestergaard.glazier.MessageHelper;
 
-/**
- *
- * @author Thomas
- */
 @WebServlet(name = "IndexServlet", urlPatterns = {"/administrator/index"})
 public class IndexServlet extends HttpServlet {
 
@@ -41,7 +31,7 @@ public class IndexServlet extends HttpServlet {
         }
 
         new MessageHelper(request);
-        
+
         request.setAttribute("title", "Administrator page");
         request.getRequestDispatcher("/WEB-INF/administrator/index-template.jsp").forward(request, response);
     }

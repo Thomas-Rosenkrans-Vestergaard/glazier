@@ -10,18 +10,33 @@ import java.util.ArrayList;
 import java.util.List;
 import tvestergaard.glazier.database.AbstractMysqlDAO;
 import tvestergaard.glazier.database.frames.Frame;
-import tvestergaard.glazier.database.frames.UnknownFrameException;
 import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
 import tvestergaard.glazier.database.glass.Glass;
-import tvestergaard.glazier.database.glass.UnknownGlassException;
 import tvestergaard.glazier.database.glass.UnknownGlassReferenceException;
 
 public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
 
+    /**
+     * Creates a new {@link MysqlOrderDAO}.
+     *
+     * @param source The {@link MysqlDataSource} from which to access the data
+     * manipulated by the {@link MysqlOrderDAO}.
+     */
     public MysqlOrderDAO(MysqlDataSource source) {
         super(source);
     }
 
+    /**
+     * Retrieves and returns the {@link Order} referenced by the provided
+     * {@link OrderReference} from the {@link OrderDAO}.
+     *
+     * @param orderReference The {@link OrderReference} referencing the
+     * {@link Order} to retrieve return.
+     * @return The {@link Order} referenced by the provided
+     * {@link OrderReference}.
+     * @throws UnknownOrderReferenceException When the provided
+     * {@link OrderReference} doesn't reference an existing {@link Order}.
+     */
     @Override
     public Order getOrder(OrderReference orderReference) throws UnknownOrderReferenceException {
         try {
@@ -58,6 +73,11 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
         }
     }
 
+    /**
+     * Retrieves and returns all the {@link Order}s from the {@link OrderDAO}.
+     *
+     * @return The compelete list of {@link Order}s.
+     */
     @Override
     public List<Order> getOrders() {
 
@@ -92,6 +112,13 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
         }
     }
 
+    /**
+     * Saves any changes to the provided {@link Order} to the {@link OrderDAO}.
+     *
+     * @param order The {@link Order} to update.
+     * @throws UnknownOrderException When the provided {@link Order} doesn't
+     * exist in the {@link OrderDAO}.
+     */
     @Override
     public void updateOrder(Order order) throws UnknownOrderException {
 
@@ -141,6 +168,15 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
         }
     }
 
+    /**
+     * Deletes the {@link Order} referenced by the provided
+     * {@link OrderReference} from the {@link OrderDAO}.
+     *
+     * @param orderReference The {@link OrderReference} referencing the
+     * {@link Order} to delete from the {@link OrderDAO}.
+     * @throws UnknownOrderReferenceException When the referenced {@link Order}
+     * doesn't exist in the {@link OrderDAO}.
+     */
     @Override
     public void deleteOrder(OrderReference orderReference) throws UnknownOrderReferenceException {
         try {
@@ -178,8 +214,20 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
         }
     }
 
+    /**
+     * Uses the provided {@link OrderBuilder} to insert a new {@link Order} into
+     * the {@link OrderDAO}.
+     *
+     * @param builder The {@link OrderBuilder} to use to insert the new
+     * {@link Order}.
+     * @return The newly created {@link Order}.
+     * @throws UnknownFrameReferenceException When the {@link Frame} inserted
+     * with the {@link Order} doesn't exist.
+     * @throws UnknownGlassReferenceException WHen the {@link Glass} inserted
+     * with the {@link Order} doesn't exist.
+     */
     @Override
-    public Order insertOrder(OrderBuilder order) throws UnknownFrameReferenceException, UnknownGlassReferenceException {
+    public Order insertOrder(OrderBuilder builder) throws UnknownFrameReferenceException, UnknownGlassReferenceException {
 
         String update = "INSERT INTO orders (frame, glass, width_mm, height_mm, customer_name, customer_address, customer_zip, customer_city, customer_email, customer_phone) VALUES "
                 + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -192,16 +240,16 @@ public class MysqlOrderDAO extends AbstractMysqlDAO implements OrderDAO {
             try {
 
                 statement = connection.prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
-                statement.setInt(1, order.getFrame().getID());
-                statement.setInt(2, order.getGlass().getID());
-                statement.setInt(3, order.getWidthMillimeters());
-                statement.setInt(4, order.getHeightMillimeters());
-                statement.setString(5, order.getCustomerName());
-                statement.setString(6, order.getCustomerAddress());
-                statement.setString(7, order.getCustomerZip());
-                statement.setString(8, order.getCustomerCity());
-                statement.setString(9, order.getCustomerEmail());
-                statement.setString(10, order.getCustomerPhone());
+                statement.setInt(1, builder.getFrame().getID());
+                statement.setInt(2, builder.getGlass().getID());
+                statement.setInt(3, builder.getWidthMillimeters());
+                statement.setInt(4, builder.getHeightMillimeters());
+                statement.setString(5, builder.getCustomerName());
+                statement.setString(6, builder.getCustomerAddress());
+                statement.setString(7, builder.getCustomerZip());
+                statement.setString(8, builder.getCustomerCity());
+                statement.setString(9, builder.getCustomerEmail());
+                statement.setString(10, builder.getCustomerPhone());
 
                 statement.executeUpdate();
 

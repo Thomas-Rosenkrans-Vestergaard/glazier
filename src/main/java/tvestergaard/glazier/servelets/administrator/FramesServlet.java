@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tvestergaard.glazier.servelets.administrator;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,21 +17,15 @@ import tvestergaard.glazier.database.frames.FrameDAO;
 import tvestergaard.glazier.database.frames.FrameReference;
 import tvestergaard.glazier.database.frames.MysqlFrameDAO;
 import tvestergaard.glazier.database.frames.UnknownFrameReferenceException;
-import tvestergaard.glazier.database.glass.GlassDAO;
-import tvestergaard.glazier.database.glass.GlassReference;
-import tvestergaard.glazier.database.glass.MysqlGlassDAO;
-import tvestergaard.glazier.database.glass.UnknownGlassReferenceException;
-import tvestergaard.glazier.database.orders.MysqlOrderDAO;
-import tvestergaard.glazier.database.orders.Order;
-import tvestergaard.glazier.database.orders.OrderBuilder;
-import tvestergaard.glazier.database.orders.OrderDAO;
 
-/**
- *
- * @author Thomas
- */
 @WebServlet(name = "FramesServlet", urlPatterns = {"/administrator/frames"})
 public class FramesServlet extends HttpServlet {
+
+    /**
+     * The {@link MysqlDataSource} used to save changes made by the
+     * administrator.
+     */
+    private MysqlDataSource source = new DefaultMysqlSource();
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -68,7 +56,6 @@ public class FramesServlet extends HttpServlet {
         String queryId = request.getParameter("id");
 
         if (queryId == null) {
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             FrameDAO frameDAO = new MysqlFrameDAO(source);
             request.setAttribute("frames", frameDAO.getFrames());
 
@@ -79,7 +66,6 @@ public class FramesServlet extends HttpServlet {
 
         try {
             int id = Integer.parseInt(queryId);
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             FrameDAO frameDAO = new MysqlFrameDAO(source);
             request.setAttribute("frame", frameDAO.getFrame(FrameReference.of(id)));
             request.getRequestDispatcher("/WEB-INF/administrator/frame-template.jsp").forward(request, response);
@@ -93,6 +79,14 @@ public class FramesServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Serves the page where the administrator can create new {@link Frame}s.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     private void handleCreateGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setAttribute("title", "Create frame");
@@ -122,12 +116,12 @@ public class FramesServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action.equals("delete")) {
-            handleDelete(request, response, messageHelper);
+            handleDeletePost(request, response, messageHelper);
             return;
         }
 
         if (action.equals("update")) {
-            handleUpdate(request, response, messageHelper);
+            handleUpdatePost(request, response, messageHelper);
             return;
         }
 
@@ -140,7 +134,17 @@ public class FramesServlet extends HttpServlet {
         response.sendRedirect("frames");
     }
 
-    private void handleDelete(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
+    /**
+     * Deletes a {@link Frame} after pressing the <code>DELETE</code> button.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @param messageHelper Instance of {@link MessageHelper} allowing the
+     * method to pass messages to the user.
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    private void handleDeletePost(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
             throws ServletException, IOException {
         String queryID = request.getParameter("id");
 
@@ -152,7 +156,6 @@ public class FramesServlet extends HttpServlet {
 
         try {
             int id = Integer.parseInt(queryID);
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             FrameDAO frameDAO = new MysqlFrameDAO(source);
             frameDAO.deleteFrame(FrameReference.of(id));
             messageHelper.addMessage("The frame was successfully deleted.");
@@ -165,7 +168,17 @@ public class FramesServlet extends HttpServlet {
         }
     }
 
-    private void handleUpdate(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
+    /**
+     * Updates a {@link Frame} after pressing the <code>UPDATE</code> button.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @param messageHelper Instance of {@link MessageHelper} allowing the
+     * method to pass messages to the user.
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    private void handleUpdatePost(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
             throws ServletException, IOException {
         String queryID = request.getParameter("id");
 
@@ -177,7 +190,6 @@ public class FramesServlet extends HttpServlet {
 
         try {
             int id = Integer.parseInt(queryID);
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             FrameDAO frameDAO = new MysqlFrameDAO(source);
 
             FrameReference reference = FrameReference.of(id);
@@ -223,6 +235,16 @@ public class FramesServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Creates a {@link Frame} after pressing the <code>CREATE</code> button.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @param messageHelper Instance of {@link MessageHelper} allowing the
+     * method to pass messages to the user.
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     private void handleCreatePost(HttpServletRequest request, HttpServletResponse response, MessageHelper messageHelper)
             throws ServletException, IOException {
 
@@ -230,7 +252,6 @@ public class FramesServlet extends HttpServlet {
 
             FrameBuilder frameBuilder = new FrameBuilder();
 
-            MysqlDataSource source = DefaultMysqlSource.getSource();
             FrameDAO frameDAO = new MysqlFrameDAO(source);
 
             boolean errors = false;
@@ -255,8 +276,8 @@ public class FramesServlet extends HttpServlet {
                 messageHelper.addMessage("Malformed price.");
                 errors = true;
             }
-            
-            if(errors){
+
+            if (errors) {
                 response.sendRedirect("orders?action=create");
                 return;
             }
