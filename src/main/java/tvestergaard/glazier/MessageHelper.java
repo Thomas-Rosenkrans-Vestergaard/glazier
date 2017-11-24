@@ -26,7 +26,7 @@ public class MessageHelper implements Iterator<Object> {
     /**
      * Creates a new {@link MessageHelper}.
      *
-     * @param request The {@link HttpRequest}.
+     * @param request The {@link HttpServletRequest}.
      */
     public MessageHelper(HttpServletRequest request) {
         this.session = request.getSession();

@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import tvestergaard.glazier.IllegalDimensionsException;
 import tvestergaard.glazier.MessageHelper;
 import tvestergaard.glazier.PriceCalculator;
 import tvestergaard.glazier.database.DefaultMysqlSource;
@@ -42,12 +43,12 @@ public class CalculatePriceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         if (request.getParameter("submit") != null) {
             handleSubmit(request, response);
             return;
         }
-
+        
         request.setAttribute("title", "Calculate product price");
         MysqlDataSource source = new DefaultMysqlSource();
         GlassDAO glassDAO = new MysqlGlassDAO(source);
@@ -67,103 +68,110 @@ public class CalculatePriceServlet extends HttpServlet {
      */
     private void handleSubmit(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        MessageHelper messageHandler = new MessageHelper(request);
-
+        
+        MessageHelper messageHelper = new MessageHelper(request);
+        
         boolean errors = false;
-
+        
         String messurement = request.getParameter("messurement");
         if (!messurement.equals("mm") && !messurement.equals("cm") && !messurement.equals("m")) {
-            messageHandler.addMessage("Invalid messurement.");
+            messageHelper.addMessage("Invalid messurement.");
             errors = true;
         }
-
+        
         BigDecimal width = null;
         try {
             width = new BigDecimal(request.getParameter("width"));
             if (width.doubleValue() <= 0) {
-                messageHandler.addMessage("Width must be positive.");
+                messageHelper.addMessage("Width must be positive.");
                 errors = true;
             }
         } catch (NumberFormatException | NullPointerException e) {
-            messageHandler.addMessage("Malformed width.");
+            messageHelper.addMessage("Malformed width.");
             errors = true;
         }
-
+        
         BigDecimal height = null;
         try {
             height = new BigDecimal(request.getParameter("height"));
             if (height.doubleValue() <= 0) {
-                messageHandler.addMessage("Width must be positive.");
+                messageHelper.addMessage("Width must be positive.");
                 errors = true;
             }
         } catch (NumberFormatException | NullPointerException e) {
-            messageHandler.addMessage("Malformed height.");
+            messageHelper.addMessage("Malformed height.");
             errors = true;
         }
-
+        
         int glassID = 0;
         try {
             glassID = Integer.parseInt(request.getParameter("glass"));
         } catch (NumberFormatException e) {
-            messageHandler.addMessage("Malformed glass.");
+            messageHelper.addMessage("Malformed glass.");
             errors = true;
         }
-
+        
         int frameID = 0;
         try {
             frameID = Integer.parseInt(request.getParameter("frame"));
         } catch (NumberFormatException e) {
-            messageHandler.addMessage("Malformed frame.");
+            messageHelper.addMessage("Malformed frame.");
             errors = true;
         }
-
+        
         if (errors) {
             response.sendRedirect("calculate-price");
             return;
         }
-
+        
         Frame frame = null;
         try {
             FrameDAO frameDAO = new MysqlFrameDAO(source);
             frame = frameDAO.getFrame(FrameReference.of(frameID));
         } catch (UnknownFrameReferenceException e) {
-            messageHandler.addMessage("Unknown frame id.");
+            messageHelper.addMessage("Unknown frame id.");
             errors = true;
         }
-
+        
         Glass glass = null;
         try {
             GlassDAO glassDAO = new MysqlGlassDAO(source);
             glass = glassDAO.getGlass(GlassReference.of(glassID));
         } catch (UnknownGlassReferenceException e) {
-            messageHandler.addMessage("Unknown glass id.");
+            messageHelper.addMessage("Unknown glass id.");
             errors = true;
         }
-
+        
         PriceCalculator calculator = new PriceCalculator();
-
+        
         BigDecimal widthMillimeters = width;
         BigDecimal heightMillimeters = height;
-
+        
         if (messurement.equals("cm")) {
             widthMillimeters = width.multiply(BigDecimal.valueOf(10));
             heightMillimeters = height.multiply(BigDecimal.valueOf(10));
         }
-
+        
         if (messurement.equals("m")) {
             widthMillimeters = width.multiply(BigDecimal.valueOf(1000));
             heightMillimeters = height.multiply(BigDecimal.valueOf(1000));
         }
-
-        request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMillimeters, heightMillimeters).setScale(2).toString());
-        request.setAttribute("messurement", messurement);
-        request.setAttribute("width", width.doubleValue());
-        request.setAttribute("height", height.doubleValue());
-        request.setAttribute("glass", glassID);
-        request.setAttribute("frame", frameID);
-        request.setAttribute("title", "Calculate product price result.");
-        request.getRequestDispatcher("WEB-INF/calculate-price-result-template.jsp").forward(request, response);
+        
+        try {
+            
+            request.setAttribute("result", calculator.calculatePrice(frame, glass, widthMillimeters, heightMillimeters).setScale(2).toString());
+            request.setAttribute("messurement", messurement);
+            request.setAttribute("width", width.doubleValue());
+            request.setAttribute("height", height.doubleValue());
+            request.setAttribute("glass", glassID);
+            request.setAttribute("frame", frameID);
+            request.setAttribute("title", "Calculate product price result.");
+            request.getRequestDispatcher("WEB-INF/calculate-price-result-template.jsp").forward(request, response);
+            
+        } catch (IllegalDimensionsException e) {
+            messageHelper.addMessage("Illegal dimensions.");
+            response.sendRedirect("calculate-price");
+        }
     }
 
     /**

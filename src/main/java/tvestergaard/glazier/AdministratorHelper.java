@@ -58,8 +58,8 @@ public class AdministratorHelper {
     /**
      * Redirects the user to the login page.
      *
-     * @throws ServletException
-     * @throws IOException
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      */
     public void redirect() throws ServletException, IOException {
         messageHelper.addMessage("You must be an administrator to access that page!");

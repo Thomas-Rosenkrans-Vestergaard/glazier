@@ -19,6 +19,7 @@ public class PriceCalculator {
      * @param widthMillimeters The width of the window in millimeters.
      * @param heightMillimeters The height of the window in millimeters.
      * @return The price of the window.
+     * @throws IllegalDimensionsException When the provided dimensions are illegal.
      */
     public BigDecimal calculatePrice(Frame frame, Glass glass, BigDecimal widthMillimeters, BigDecimal heightMillimeters) throws IllegalDimensionsException {
 

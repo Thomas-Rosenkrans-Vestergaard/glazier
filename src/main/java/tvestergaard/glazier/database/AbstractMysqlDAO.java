@@ -40,7 +40,7 @@ public abstract class AbstractMysqlDAO {
      *
      * @return The {@link Connection} used by descendants of the
      * {@link AbstractMysqlDAO}.
-     * @throws SQLException
+     * @throws SQLException When an error occurs while establishing a connection.
      */
     protected final Connection getConnection() throws SQLException {
         if (connection == null) {
